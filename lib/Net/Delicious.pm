@@ -1,7 +1,7 @@
 package Net::Delicious;
 use strict;
 
-# $Id: Delicious.pm,v 1.14 2004/03/06 05:14:28 asc Exp $
+# $Id: Delicious.pm,v 1.15 2004/03/08 23:00:02 asc Exp $
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.4';
+$Net::Delicious::VERSION = '0.5';
 
 use HTTP::Request;
 use LWP::UserAgent;
@@ -200,7 +200,7 @@ sub posts_per_date {
     my $res = $self->_sendrequest($req);
 
     if (! $res) {
-	return undef;
+	return (wantarray) ? () : undef;
     }
 
     my $dates = $self->_getresults($res,"date");
@@ -250,7 +250,7 @@ sub recent_posts {
    my $res = $self->_sendrequest($req);
 
    if (! $res) {
-       return undef;
+       return (wantarray) ? () : undef;
    }
 
    my $posts = $self->_getresults($res,"post");
@@ -303,7 +303,7 @@ sub posts {
     my $res = $self->_sendrequest($req);
     
     if (! $res) {
-	return undef;
+	return (wantarray) ? () : undef;
     }
     
     #
@@ -325,7 +325,7 @@ sub tags {
     my $res = $self->_sendrequest($req);
 
     if (! $res) {
-	return undef;
+	return (wantarray) ? () : undef;
     }
 
     #
@@ -432,7 +432,7 @@ sub inbox_for_date {
     my $res = $self->_sendrequest($req);
 
     if (! $res) {
-	return undef;
+	return (wantarray) ? () : undef;
     }
 
     my $posts = $self->_getresults($res,"post");
@@ -461,7 +461,7 @@ sub inbox_dates {
     my $res = $self->_sendrequest($req);
 
     if (! $res) {
-	return undef;
+	return (wantarray) ? () : undef;
     }
 
     my $dates = $self->_getresults($res,"date");
@@ -489,7 +489,7 @@ sub inbox_subscriptions {
     my $res = $self->_sendrequest($req);
 
     if (! $res) {
-	return undef;
+	return (wantarray) ? () : undef;
     }
 
     my $subs = $self->_getresults($res,"sub");
@@ -794,11 +794,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.4
+0.5
 
 =head1 DATE 
 
-$Date: 2004/03/06 05:14:28 $
+$Date: 2004/03/08 23:00:02 $
 
 =head1 AUTHOR
 
@@ -810,7 +810,7 @@ http://del.icio.us/doc/api
 
 =head1 NOTES
 
-The version number (0.4) reflects the fact the del.icio.us API
+The version number (0.5) reflects the fact the del.icio.us API
 still has a great big "I am a moving target" disclaimer around
 its neck.
 
