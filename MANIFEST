@@ -1,0 +1,15 @@
+Changes
+lib/Net/Delicious.pm
+lib/Net/Delicious/Constants.pm
+lib/Net/Delicious/Constants/Api.pm
+lib/Net/Delicious/Constants/Response.pm
+lib/Net/Delicious/Constants/Uri.pm
+lib/Net/Delicious/Date.pm
+lib/Net/Delicious/Iterator.pm
+lib/Net/Delicious/Post.pm
+lib/Net/Delicious/Subscription.pm
+lib/Net/Delicious/Tag.pm
+MANIFEST
+Makefile.PL
+t/01-load.t
+META.yml                                 Module meta-data (added by MakeMaker)
