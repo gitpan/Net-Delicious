@@ -1,3 +1,4 @@
+Build.PL
 Changes
 lib/Net/Delicious.pm
 lib/Net/Delicious/Constants.pm
@@ -13,5 +14,6 @@ lib/Net/Delicious/Tag.pm
 lib/Net/Delicious/User.pm
 MANIFEST
 Makefile.PL
+META.yml
+README
 t/01-load.t
-META.yml                                 Module meta-data (added by MakeMaker)

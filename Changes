@@ -1,4 +1,15 @@
-# $Id: Changes,v 1.16 2004/10/08 14:12:30 asc Exp $
+# $Id: Changes,v 1.18 2004/12/12 22:42:48 asc Exp $
+
+0.92     Fri Dec 10 2004
+
+	 - ADDED 'update' method and corresponding constants
+	   in N:D:C:Api
+
+	 - UPDATED 'all_posts' to account for last updates
+
+	 - UPDATED POD
+
+	 - REPLACED ExtUtils::MakeMaker with ModuleBuild
 
 0.91     Fri Oct 08 2004
 

@@ -1,0 +1,284 @@
+NAME
+    Net::Delicious - OOP for the del.icio.us API
+
+SYNOPSIS
+      use Net::Delicious;
+      use Log::Dispatch::Screen;
+
+      my $del = Net::Delicious->new({user=>"foo",
+                                     pswd=>"bar"});
+
+      foreach my $p ($del->recent_posts()) {
+          print $p->description()."\n";
+      } 
+
+DESCRIPTION
+    OOP for the del.icio.us API
+
+PACKAGE METHODS
+  __PACKAGE__->new(\%args)
+    Valid arguments are :
+
+    * user
+        String. *required*
+
+        Your del.icio.us username.
+
+    * pswd
+        String. *required*
+
+        Your del.icio.us password.
+
+    * updates
+        String.
+
+        The path to a directory where the timestamp for the last update to
+        your bookmarks can be recorded. This is used by the *all_posts*
+        method to prevent abusive requests.
+
+        Default is the current user's home directory, followed by a
+        temporary directory as determined by File::Temp.
+
+    * debug
+        Boolean.
+
+        Add a *Log::Dispatch::Screen* dispatcher to log debug (and higher)
+        notices. Notices will be printed to STDERR.
+
+    Returns a Net::Delicious object. Woot!
+
+OBJECT METHODS
+  $obj->add_post(\%args)
+    Makes a post to del.icio.us.
+
+    Valid arguments are :
+
+    * url
+        String. *required*
+
+        Url for post
+
+    * description
+        String.
+
+        Description for post.
+
+    * extended
+        String.
+
+        Extended for post.
+
+    * tags
+        String.
+
+        Space-delimited list of tags.
+
+    * dt
+        String.
+
+        Datestamp for post, format "CCYY-MM-DDThh:mm:ssZ"
+
+    Returns true or false.
+
+  $obj->delete_post(\%args)
+    Delete a post from del.icio.us.
+
+    Valid arguments are :
+
+    * url
+        String. *required*
+
+    Returns true or false.
+
+  $obj->posts_per_date(\%args)
+    Get a list of dates with the number of posts at each date.
+
+    Valid arguments are :
+
+    * tag
+        String.
+
+        Filter by this tag.
+
+    Returns a list of *Net::Delicious::Date* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+  $obj->recent_posts(\%args)
+    Get a list of most recent posts, possibly filtered by tag.
+
+    Valid arguments are :
+
+    * tag
+        String.
+
+        Filter by this tag.
+
+    * count
+        Int.
+
+        Number of posts to return. Default is 20; maximum is 100
+
+    Returns a list of *Net::Delicious::Post* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+  $obj->all_posts()
+    Returns a list of *Net::Delicious::Post* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+    If no posts have been added between calls to this method, it will return
+    an empty list (or undef if called in a scalar context.)
+
+  $obj->update()
+    Returns return the time of the last update formatted as a W3CDTF string.
+
+  $obj->posts(\%args)
+    Get a list of posts on a given date, filtered by tag. If no date is
+    supplied, most recent date will be used.
+
+    Valid arguments are :
+
+    * tag
+        String.
+
+        Filter by this tag.
+
+    * dt
+        String.
+
+        Filter by this date.
+
+    Returns a list of *Net::Delicious::Post* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+  $obj->tags()
+    Returns a list of tags.
+
+  $obj->rename_tag(\%args)
+    Renames tags across all posts.
+
+    Valid arguments are :
+
+    * old
+        String. *required*
+
+        Old tag
+
+    * new
+        String. *required*
+
+        New tag
+
+    Returns true or false.
+
+  $obj->inbox_for_date(\%args)
+    Get a list of inbox entries.
+
+    Valid arguments are :
+
+    * dt
+        String.
+
+        Filter by this date
+
+    Returns a list of *Net::Delicious::Post* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+  $obj->inbox_dates()
+    Get a list of dates containing inbox entries.
+
+    Returns a list of *Net::Delicious::Date* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+    *This may be updated to return a Net::Delicious::Inbox object.*
+
+  $obj->inbox_subscriptions()
+    Get a list of your subscriptions.
+
+    Returns a list of *Net::Delicious::Subscription* objects when called in
+    an array context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+  $obj->add_inbox_subscription(\%args)
+    Adds a subscription.
+
+    Valid arguments are :
+
+    * user
+        String. *required*
+
+        Username.
+
+    * tag
+        String.
+
+        Tag - leave blank for all posts
+
+    Returns true or false.
+
+  $obj->remove_inbox_subscription(\%args)
+    Valid arguments are :
+
+    * user
+        String. *required*
+
+        Username.
+
+    * tag
+        String.
+
+        Tag - leave blank for all posts
+
+    Returns true or false.
+
+  $obj->logger()
+    Returns a Log::Dispatch object.
+
+ERRORS
+    Errors are logged via the object's *logger* method which returns a
+    *Log::Dispatch* object. If you want to get at the errors it is up to you
+    to provide it with a dispatcher.
+
+VERSION
+    0.92
+
+DATE
+    $Date: 2004/12/12 22:42:48 $
+
+AUTHOR
+    Aaron Straup Cope <ascope@cpan.org>
+
+SEE ALSO
+    http://del.icio.us/doc/api
+
+NOTES
+    The version number (0.9) reflects the fact the del.icio.us API still has
+    a great big "I am a moving target" disclaimer around its neck.
+
+    This package implements the API in its entirety as of *DATE*.
+
+LICENSE
+    Copyright (c) 2004, Aaron Straup Cope. All Rights Reserved.
+
+    This is free software, you may use it and distribute it under the same
+    terms as Perl itself.
+

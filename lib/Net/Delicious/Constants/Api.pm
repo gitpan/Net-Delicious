@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Api;
 use strict;
 
-# $Id: Api.pm,v 1.6 2004/10/05 13:02:40 asc Exp $
+# $Id: Api.pm,v 1.8 2004/12/12 22:42:48 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us API calls.
 
 =cut
 
-$Net::Delicious::Constants::Api::VERSION = '0.2';
+$Net::Delicious::Constants::Api::VERSION = '0.3';
 
 use constant LOCAL_API_POSTS => "posts";
 use constant LOCAL_API_TAGS  => "tags";
@@ -48,6 +48,14 @@ use constant API_POSTSFORUSER => join("/",LOCAL_API_POSTS,"get");
 String.
 
 =cut
+
+=head2 API_POSTSFORUSER_UPDATE
+
+String.
+
+=cut
+
+use constant API_POSTSFORUSER_UPDATE => join("/",LOCAL_API_POSTS,"update");
 
 use constant API_POSTSFORUSER_RECENT => join("/",LOCAL_API_POSTS,"recent");
 use constant API_POSTSFORUSER_ALL    => join("/",LOCAL_API_POSTS,"all");
@@ -125,6 +133,7 @@ BEGIN {
 		     API_POSTSFORUSER
 		     API_POSTSFORUSER_RECENT
 		     API_POSTSFORUSER_ALL
+		     API_POSTSFORUSER_UPDATE
 
 		     API_POSTSADD
 		     API_POSTSDELETE
@@ -142,11 +151,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.2
+0.3
 
 =head1 DATE
 
-$Date: 2004/10/05 13:02:40 $
+$Date: 2004/12/12 22:42:48 $
 
 =head1 AUTHOR
 

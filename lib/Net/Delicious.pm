@@ -1,7 +1,9 @@
+# $Id: Delicious.pm,v 1.30 2004/12/12 22:42:48 asc Exp $
+
 package Net::Delicious;
 use strict;
 
-# $Id: Delicious.pm,v 1.28 2004/10/08 14:12:30 asc Exp $
+$Net::Delicious::VERSION = '0.92';
 
 =head1 NAME
 
@@ -25,7 +27,7 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.91';
+use Net::Delicious::Constants qw (:api :pause :response :uri);
 
 use HTTP::Request;
 use LWP::UserAgent;
@@ -36,7 +38,16 @@ use Log::Dispatch;
 use YAML;
 
 use Time::HiRes;
-use Net::Delicious::Constants qw (:api :pause :response :uri);
+
+# All this, just to keep track
+# of update/all_posts stuff...
+
+use IO::AtomicFile;
+use FileHandle;
+use File::Temp;
+use File::Spec;
+use Date::Parse;
+use English;
 
 =head1 PACKAGE METHODS
 
@@ -60,6 +71,17 @@ String. I<required>
 
 Your del.icio.us password.
 
+=item * B<updates>
+
+String.
+
+The path to a directory where the timestamp for the last
+update to your bookmarks can be recorded. This is used by
+the I<all_posts> method to prevent abusive requests.
+
+Default is the current user's home directory, followed by
+a temporary directory as determined by File::Temp.
+
 =item * B<debug>
 
 Boolean.
@@ -81,8 +103,17 @@ sub new {
 
     my $self = {__user   => $args->{user},
 		__pswd   => $args->{pswd},
+
+		# flags for throttling
 		__wait   => 0,
-		__paused => 0,};
+		__paused => 0,
+	    };
+
+    # flags for recording last updates
+
+    if ($args->{'updates'}) {
+	$self->{'__updates'} = $args->{'__updates'};
+    }
 
     bless $self, $pkg;
 
@@ -307,10 +338,19 @@ when called in an array context.
 Returns a I<Net::Delicious::Iterator> object when called
 in a scalar context.
 
+If no posts have been added between calls to this method,
+it will return an empty list (or undef if called in a scalar
+context.)
+
 =cut
 
 sub all_posts {
    my $self = shift;
+
+   if (! $self->_is_updated()) {
+       $self->logger()->info("posts have not changed since last call");
+       return (wantarray) ? () : undef;       
+   }
 
    my $req = $self->_buildrequest(API_POSTSFORUSER_ALL);
    my $res = $self->_sendrequest($req);
@@ -321,6 +361,22 @@ sub all_posts {
 
    my $posts = $self->_getresults($res,"post");
    return $self->_buildresults("Post",$posts);
+}
+
+=head2 $obj->update()
+
+Returns return the time of the last update formatted as 
+a W3CDTF string.
+
+=cut
+
+sub update {
+   my $self = shift;
+
+   my $req = $self->_buildrequest(API_POSTSFORUSER_UPDATE);
+   my $res = $self->_sendrequest($req);
+
+   return ($res) ? $res->{time} : undef;
 }
 
 =head2 $obj->posts(\%args)
@@ -671,6 +727,76 @@ sub logger {
     return $self->{'__logger'};    
 }
 
+sub _read_update {
+    my $self = shift;
+
+    my $path = $self->_path_update();
+    my $fh   = FileHandle->new($path);
+
+    if (! $fh) {
+	$self->logger()->error("unable to open '$path' for reading, $!");
+	return 0;
+    }
+
+    my $time = $fh->getline();
+    chomp $time;
+
+    $fh->close();
+    return $time;
+}
+
+sub _write_update {
+    my $self = shift;
+    my $time = shift;
+
+    my $path = $self->_path_update();
+    my $fh   = IO::AtomicFile->open($path,"w");
+
+    if (! $fh) {
+	$self->logger()->error("unable to open '$path' for writing, $!");
+	return 0;
+    }
+
+    $fh->print($time);
+    $fh->close();
+
+    return 1;
+}
+
+sub _is_updated {
+    my $self = shift;
+
+    my $last    = $self->_read_update();
+    my $current = $self->update();
+
+    $self->_write_update($current);
+
+    return ($last) ? (str2time($current) > str2time($last)) : 1;
+}
+
+sub _path_update {
+    my $self = shift;
+    
+    my $root = undef;
+    my $file = sprintf(".del.icio.us.%s",$self->{'__user'});;
+
+    if (exists($self->{'__updates'})) {
+	$root = $self->{'__updates'};
+    }
+    
+    elsif (-d (getpwuid($EUID))[7]) {
+	$root = (getpwuid($EUID))[7];
+    }
+
+
+    else {
+	$root = File::Temp::tempdir();
+	$self->{'__updates'} = $root;
+    }
+
+    return File::Spec->catfile($root,$file);
+}
+
 sub _buildrequest {
     my $self   = shift;
     my $meth   = shift;
@@ -927,11 +1053,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.91
+0.92
 
 =head1 DATE 
 
-$Date: 2004/10/08 14:12:30 $
+$Date: 2004/12/12 22:42:48 $
 
 =head1 AUTHOR
 
