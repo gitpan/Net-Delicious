@@ -9,6 +9,7 @@ lib/Net/Delicious/Iterator.pm
 lib/Net/Delicious/Post.pm
 lib/Net/Delicious/Subscription.pm
 lib/Net/Delicious/Tag.pm
+lib/Net/Delicious/User.pm
 MANIFEST
 Makefile.PL
 t/01-load.t

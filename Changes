@@ -1,4 +1,29 @@
-# $Id: Changes,v 1.3 2004/02/01 22:19:08 asc Exp $
+# $Id: Changes,v 1.6 2004/03/06 05:14:28 asc Exp $
+
+0.4      Fri Mar 05 2004
+
+	 - blessed
+
+0.4_01   Thu Mar 04 2004
+
+	 - fixed bug in 'recent_posts' and 'posts' methods
+	   where the results of '_getresults' were not being
+	   passed to '_buildresults'
+
+	 - fixed bug in 'tags' and 'inbox_subscriptions'
+	   methods where '_getresults' wasn't being called at
+	   all
+
+	 - Fixed broken 'tag' method in N:D:T (gah!)
+
+	 - Added N:D:User package
+
+	 - Added 'user' method to N:D:Post
+
+	 - Replaced all instances of '_request' with
+	   '_sendrequest'
+
+	 - Updated POD
 
 0.3      Mon Feb 09 2004
 

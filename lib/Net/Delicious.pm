@@ -1,7 +1,7 @@
 package Net::Delicious;
 use strict;
 
-# $Id: Delicious.pm,v 1.11 2004/02/01 22:19:09 asc Exp $
+# $Id: Delicious.pm,v 1.14 2004/03/06 05:14:28 asc Exp $
 
 =head1 NAME
 
@@ -16,8 +16,6 @@ Net::Delicious - OOP for the del.icio.us API
 				 pswd=>"bar"});
 
   foreach my $p ($del->recent_posts()) {
-
-      print "$p\n";
       print $p->description()."\n";
   } 
 
@@ -27,7 +25,7 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.3';
+$Net::Delicious::VERSION = '0.4';
 
 use HTTP::Request;
 use LWP::UserAgent;
@@ -158,7 +156,7 @@ sub add_post {
 
     #
 
-    my @params = ("url", "description","extended","tags","dt");
+    my @params = ("url","description","extended","tags","dt");
 
     my $req    = $self->_buildrequest(API_POSTSADD,$args,@params);
     my $res    = $self->_sendrequest($req);
@@ -199,7 +197,7 @@ sub posts_per_date {
     my @params = ("tag");
 
     my $req = $self->_buildrequest(API_POSTSPERDATE,$args,@params);
-    my $res = $self->_request($req);
+    my $res = $self->_sendrequest($req);
 
     if (! $res) {
 	return undef;
@@ -256,7 +254,7 @@ sub recent_posts {
    }
 
    my $posts = $self->_getresults($res,"post");
-   return $self->_buildresults("Post",$res->{post});
+   return $self->_buildresults("Post",$posts);
 }
 
 =head2 $obj->posts(\%args)
@@ -311,7 +309,7 @@ sub posts {
     #
 
     my $posts = $self->_getresults($res,"post");
-    return $self->_buildresults("Post",$res->{post});
+    return $self->_buildresults("Post",$posts);
 }
 
 =head2 $obj->tags()
@@ -324,7 +322,7 @@ sub tags {
     my $self = shift;
 
     my $req = $self->_buildrequest(API_TAGSFORUSER);
-    my $res = $self->_request($req);
+    my $res = $self->_sendrequest($req);
 
     if (! $res) {
 	return undef;
@@ -332,7 +330,8 @@ sub tags {
 
     #
 
-    return $self->_buildresults("Tag",$res->{tag});
+    my $tags = $self->_getresults($res,"tag");
+    return $self->_buildresults("Tag",$tags);
 }
 
 =head2 $obj->rename_tag(\%args)
@@ -493,11 +492,8 @@ sub inbox_subscriptions {
 	return undef;
     }
 
-    my $subs = (ref($res->{sub}) eq "ARRAY") ?
-	$res->{sub} : [ $res->{sub} ];
-
-    return $self->_buildresults("Subscription",
-				$subs);
+    my $subs = $self->_getresults($res,"sub");
+    return $self->_buildresults("Subscription",$subs);
 }
 
 =head2 $obj->add_inbox_subscription(\%args)
@@ -608,8 +604,6 @@ sub logger {
 
     return $self->{'__logger'};    
 }
-
-*_request = \&_send_request;
 
 sub _buildrequest {
     my $self   = shift;
@@ -800,11 +794,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.3
+0.4
 
 =head1 DATE 
 
-$Date: 2004/02/01 22:19:09 $
+$Date: 2004/03/06 05:14:28 $
 
 =head1 AUTHOR
 
@@ -816,7 +810,7 @@ http://del.icio.us/doc/api
 
 =head1 NOTES
 
-The version number (0.3) reflects the fact the del.icio.us API
+The version number (0.4) reflects the fact the del.icio.us API
 still has a great big "I am a moving target" disclaimer around
 its neck.
 

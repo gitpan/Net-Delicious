@@ -1,28 +1,26 @@
-package Net::Delicious::Tag;
+package Net::Delicious::User;
 use strict;
 
-# $Id: Tag.pm,v 1.6 2004/03/04 14:45:45 asc Exp $
+# $Id: User.pm,v 1.1 2004/03/04 14:45:46 asc Exp $
 
 =head1 NAME
 
-Net::Delicious::Tag - OOP for del.icio.us tag thingies
+Net::Delicious::User - OOP for del.icio.us user thingies
 
 =head1 SYNOPSIS
 
   use Net::Delicious;
   my $del = Net::Delicious->new({...});
 
-  foreach my $tag ($del->tags()) {
+  foreach my $post ($del->recent_posts()) {
 
-      # $tag is a Net::Delicious::Tag 
-      # object.
-
-      print "$tag\n";
+      my $user = $post->user();
+      print $user->name()."\n";
   }
 
 =head1 DESCRIPTION
 
-OOP for del.icio.us tag thingies.
+OOP for del.icio.us user thingies.
 
 =head1 NOTES
 
@@ -30,7 +28,7 @@ OOP for del.icio.us tag thingies.
 
 =item *
 
-This package overrides the perl builtin I<stringify> operator and returns the value of the object's I<tag> method.
+This package overrides the perl builtin I<stringify> operator and returns the value of the object's I<name> method.
 
 =item *
 
@@ -41,9 +39,9 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Tag::VERSION = '0.2';
+$Net::Delicious::User::VERSION = '0.1';
 
-use overload q("") => sub { shift->tag() };
+use overload q("") => sub { shift->name() };
 
 =head1 PACKAGE METHODS
 
@@ -51,7 +49,7 @@ use overload q("") => sub { shift->tag() };
 
 =head1 __PACKAGE__->new(\%args)
 
-Returns a I<Net::Delicious::Tag> object. Woot!
+Returns a I<Net::Delicious::User> object. Woot!
 
 =cut
 
@@ -61,7 +59,7 @@ sub new {
 
     my %self = map {
 	$_ => $args->{ $_ }
-    } qw ( tag count );
+    } qw ( name );
 
     return bless \%self, $pkg;    
 }
@@ -70,35 +68,24 @@ sub new {
 
 =cut
 
-=head2 $obj->count()
-
-Returns an int.
-
-=cut
-
-sub count {
-    my $self = shift;
-    return $self->{count};
-}
-
-=head2 $obj->tag()
+=head2 $obj->name()
 
 Returns an string.
 
 =cut
 
-sub tag {
+sub name {
     my $self = shift;
-    return $self->{tag};
+    return $self->{name};
 }
 
 =head1 VERSION
 
-0.2
+0.1
 
 =head1 DATE
 
-$Date: 2004/03/04 14:45:45 $
+$Date: 2004/03/04 14:45:46 $
 
 =head1 AUTHOR
 
