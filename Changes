@@ -1,4 +1,9 @@
-# $Id: Changes,v 1.7 2004/03/08 22:57:19 asc Exp $
+# $Id: Changes,v 1.8 2004/07/08 13:45:02 asc Exp $
+
+0.6      Thu Jul 08 2004
+
+	 - fixed bug where get/recent posts were all mixed
+	   up - d'oh! (RT ticket # 6890)
 
 0.5      Tue Mar 08 2004
 
