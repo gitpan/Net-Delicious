@@ -1,4 +1,9 @@
-# $Id: Changes,v 1.15 2004/10/06 03:20:25 asc Exp $
+# $Id: Changes,v 1.16 2004/10/08 14:12:30 asc Exp $
+
+0.91     Fri Oct 08 2004
+
+	 - FIXED bug in N:D:P constructor that was ignoring
+	   tags when invoked in a 'recent_posts' context
 
 0.9      Wed Oct 06 2004
 

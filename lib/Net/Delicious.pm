@@ -1,7 +1,7 @@
 package Net::Delicious;
 use strict;
 
-# $Id: Delicious.pm,v 1.27 2004/10/06 03:20:26 asc Exp $
+# $Id: Delicious.pm,v 1.28 2004/10/08 14:12:30 asc Exp $
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.9';
+$Net::Delicious::VERSION = '0.91';
 
 use HTTP::Request;
 use LWP::UserAgent;
@@ -927,11 +927,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.9
+0.91
 
 =head1 DATE 
 
-$Date: 2004/10/06 03:20:26 $
+$Date: 2004/10/08 14:12:30 $
 
 =head1 AUTHOR
 

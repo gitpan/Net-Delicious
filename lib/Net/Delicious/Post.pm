@@ -1,7 +1,7 @@
 package Net::Delicious::Post;
 use strict;
 
-# $Id: Post.pm,v 1.10 2004/10/05 21:09:40 asc Exp $
+# $Id: Post.pm,v 1.11 2004/10/08 14:12:30 asc Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Post::VERSION = '0.4';
+$Net::Delicious::Post::VERSION = '0.5';
 
 use Net::Delicious::User;
 use overload q("") => sub { shift->href() };
@@ -62,7 +62,13 @@ sub new {
     
     my %self = map { 
 	$_ => $args->{ $_ };
-    } qw ( description extended href tags time parent);
+    } qw ( description extended href time parent);
+
+    # this one seems to be the source of some
+    # confusion - unclear whether it's me or
+    # inconsistency in the API itself
+
+    $self{ tags } = $args->{ tags } || $args->{ tag };
 
     #
 
@@ -158,11 +164,11 @@ sub time {
 
 =head1 VERSION
 
-0.4
+0.5
 
 =head1 DATE
 
-$Date: 2004/10/05 21:09:40 $
+$Date: 2004/10/08 14:12:30 $
 
 =head1 AUTHOR
 
