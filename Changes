@@ -1,4 +1,9 @@
-# $Id: Changes,v 1.8 2004/07/08 13:45:02 asc Exp $
+# $Id: Changes,v 1.9 2004/09/16 21:43:21 asc Exp $
+
+0.7      Fri Sep 17 2004
+
+	 - Added hooks to pause between requests and back-off
+	   when service returns 503
 
 0.6      Thu Jul 08 2004
 

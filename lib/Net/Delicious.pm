@@ -1,7 +1,7 @@
 package Net::Delicious;
 use strict;
 
-# $Id: Delicious.pm,v 1.16 2004/07/08 13:45:02 asc Exp $
+# $Id: Delicious.pm,v 1.21 2004/09/17 18:41:52 asc Exp $
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.6';
+$Net::Delicious::VERSION = '0.7';
 
 use HTTP::Request;
 use LWP::UserAgent;
@@ -35,7 +35,8 @@ use XML::Simple;
 use Log::Dispatch;
 use YAML;
 
-use Net::Delicious::Constants qw (:api :response :uri);
+use Time::HiRes;
+use Net::Delicious::Constants qw (:api :pause :response :uri);
 
 =head1 PACKAGE METHODS
 
@@ -78,8 +79,10 @@ sub new {
 
     #
 
-    my $self = {__user => $args->{user},
-		__pswd => $args->{pswd}};
+    my $self = {__user   => $args->{user},
+		__pswd   => $args->{pswd},
+		__wait   => 0,
+		__paused => 0,};
 
     bless $self, $pkg;
 
@@ -628,10 +631,77 @@ sub _sendrequest {
     my $self = shift;
     my $req  = shift;
 
+    # check to see if we need to take
+    # breather (are we pounding or are
+    # we not?)
+
+    while (time < $self->{'__wait'}) {
+
+	my $debug_msg = sprintf("trying not to beat up on service, pause for %d seconds",
+				PAUSE_SECONDS_OK);
+
+	$self->logger()->debug($debug_msg);
+	sleep(PAUSE_SECONDS_OK);
+    }
+
+    # send request
+
     my $res = $self->_ua()->request($req);
     $self->logger()->debug($res->as_string());
 
-    #
+    # check for 503 status
+
+    if ($res->code() eq PAUSE_ONSTATUS) {
+
+	# you are in a dark and twisty corridor
+	# where all the errors look the same - 
+	# just give up if we hit this ceiling
+
+	$self->{'__paused'} ++;
+
+	if ($self->{'__paused'} > PAUSE_MAXTRIES) {
+
+	    my $errmsg = sprintf("service returned '%d' status %d times; exiting",
+				 PAUSE_ONSTATUS,PAUSE_MAXTRIES);
+	    
+	    $self->logger()->error($errmsg);
+	    return undef;
+	}
+
+	# check to see if the del.icio.us server
+	# requests that we hold off for a set amount
+	# of time - otherwise wait a little longer
+	# than the last time
+
+	my $retry_after = $res->header("Retry-After");
+	my $debug_msg   = undef;
+
+	if ($retry_after ) {
+	    $debug_msg = sprintf("service unavailable, requested to retry in %d seconds",
+				 $retry_after);
+	} 
+
+	else {
+	    $retry_after = PAUSE_SECONDS_UNAVAILABLE * $self->{'__paused'};
+	    $debug_msg = sprintf("service unavailable, pause for %.2f seconds",
+				 $retry_after);
+	}
+
+	$self->logger()->debug($debug_msg);
+	sleep($retry_after);
+
+	# try, try again
+
+	return $self->_sendrequest($req);
+    }
+
+    # (re) set internal timers
+
+    $self->{'__wait'}   = time + PAUSE_SECONDS_OK;
+    $self->{'__paused'} = 0;
+
+    # check for any other HTTP 
+    # errors
 
     if ($res->code() ne 200) {
 	$self->logger()->error(join(":",$res->code(),$res->message()));
@@ -643,7 +713,7 @@ sub _sendrequest {
 	return undef;
     }
 
-    #
+    # munge munge munge
 
     my $xml = undef;
 
@@ -794,11 +864,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.6
+0.7
 
 =head1 DATE 
 
-$Date: 2004/07/08 13:45:02 $
+$Date: 2004/09/17 18:41:52 $
 
 =head1 AUTHOR
 
@@ -810,7 +880,7 @@ http://del.icio.us/doc/api
 
 =head1 NOTES
 
-The version number (0.5) reflects the fact the del.icio.us API
+The version number (0.7) reflects the fact the del.icio.us API
 still has a great big "I am a moving target" disclaimer around
 its neck.
 

@@ -2,6 +2,7 @@ Changes
 lib/Net/Delicious.pm
 lib/Net/Delicious/Constants.pm
 lib/Net/Delicious/Constants/Api.pm
+lib/Net/Delicious/Constants/Pause.pm
 lib/Net/Delicious/Constants/Response.pm
 lib/Net/Delicious/Constants/Uri.pm
 lib/Net/Delicious/Date.pm
