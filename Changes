@@ -1,4 +1,8 @@
-# $Id: Changes,v 1.9 2004/09/16 21:43:21 asc Exp $
+# $Id: Changes,v 1.10 2004/09/20 14:06:09 asc Exp $
+
+0.71     Mon Sep 20 2004
+
+	 - Fixed tag(s) method in N:D:P
 
 0.7      Fri Sep 17 2004
 

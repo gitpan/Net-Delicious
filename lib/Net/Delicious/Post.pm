@@ -1,7 +1,7 @@
 package Net::Delicious::Post;
 use strict;
 
-# $Id: Post.pm,v 1.6 2004/03/04 14:45:45 asc Exp $
+# $Id: Post.pm,v 1.8 2004/09/20 22:37:24 asc Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Post::VERSION = '0.2';
+$Net::Delicious::Post::VERSION = '0.3';
 
 use Net::Delicious::User;
 use overload q("") => sub { shift->href() };
@@ -62,7 +62,7 @@ sub new {
     
     my %self = map { 
 	$_ => $args->{ $_ };
-    } qw ( description extended href tag time );
+    } qw ( description extended href tags time );
 
     #
 
@@ -114,16 +114,26 @@ sub href {
 
 =head2 $obj->tag()
 
-Returns a string.
+Deprecated - calls I<tags>
 
 =cut
 
 sub tag {
-    my $self = shift;
-    return $self->{tag};
+    return shift->tags();
 }
 
-=head2 $obj->tag()
+=head2 $obj->tags()
+
+Returns a string.
+
+=cut
+
+sub tags {
+    my $self = shift;
+    return $self->{tags};
+}
+
+=head2 $obj->user()
 
 Returns a Net::Delicious::User object.
 
@@ -151,7 +161,7 @@ sub time {
 
 =head1 DATE
 
-$Date: 2004/03/04 14:45:45 $
+$Date: 2004/09/20 22:37:24 $
 
 =head1 AUTHOR
 
