@@ -27,13 +27,15 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.2';
+$Net::Delicious::VERSION = '0.3';
 
 use HTTP::Request;
 use LWP::UserAgent;
 
-use Log::Dispatch;
 use XML::Simple;
+
+use Log::Dispatch;
+use YAML;
 
 use Net::Delicious::Constants qw (:api :response :uri);
 
@@ -655,8 +657,7 @@ sub _sendrequest {
 	$xml = XMLin($res->content());
     };
 
-    use Data::Denter;
-    $self->logger()->debug(Indent($xml));
+    $self->logger()->debug(Dump($xml));
 
     if ($@) {
 	$self->logger()->error($@);
@@ -799,7 +800,7 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.2
+0.3
 
 =head1 DATE 
 
@@ -815,7 +816,7 @@ http://del.icio.us/doc/api
 
 =head1 NOTES
 
-The version number (0.2) reflects the fact the del.icio.us API
+The version number (0.3) reflects the fact the del.icio.us API
 still has a great big "I am a moving target" disclaimer around
 its neck.
 

@@ -41,7 +41,7 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Post::VERSION = '0.1';
+$Net::Delicious::Post::VERSION = '0.2';
 
 use overload q("") => sub { shift->href() };
 
@@ -61,7 +61,7 @@ sub new {
     
     my %self = map { 
 	$_ => $args->{ $_ };
-    } qw ( description href tag time );
+    } qw ( description extended href tag time );
 
     return bless \%self, $pkg;
 }
@@ -79,6 +79,17 @@ Returns a string.
 sub description {
     my $self = shift;
     return $self->{description};
+}
+
+=head2 $obj->extended()
+
+Returns a string.
+
+=cut
+
+sub extended {
+    my $self = shift;
+    return $self->{extended};
 }
 
 =head2 $obj->href()
@@ -118,7 +129,7 @@ sub time {
 
 =head1 VERSION
 
-0.1
+0.2
 
 =head1 DATE
 
