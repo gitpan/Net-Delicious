@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Api;
 use strict;
 
-# $Id: Api.pm,v 1.5 2004/09/30 14:18:09 asc Exp $
+# $Id: Api.pm,v 1.6 2004/10/05 13:02:40 asc Exp $
 
 =head1 NAME
 
@@ -58,7 +58,9 @@ String.
 
 =cut
 
-use constant API_POSTSADD => join("/",LOCAL_API_POSTS,"add");
+use constant API_POSTSADD    => join("/",LOCAL_API_POSTS,"add");
+
+use constant API_POSTSDELETE => join("/",LOCAL_API_POSTS,"delete");
 
 =head2 API_TAGSFORUSER
 
@@ -123,8 +125,10 @@ BEGIN {
 		     API_POSTSFORUSER
 		     API_POSTSFORUSER_RECENT
 		     API_POSTSFORUSER_ALL
+
 		     API_POSTSADD
-		     
+		     API_POSTSDELETE
+
 		     API_TAGSFORUSER
 		     API_TAGSRENAME
 		     
@@ -142,7 +146,7 @@ BEGIN {
 
 =head1 DATE
 
-$Date: 2004/09/30 14:18:09 $
+$Date: 2004/10/05 13:02:40 $
 
 =head1 AUTHOR
 

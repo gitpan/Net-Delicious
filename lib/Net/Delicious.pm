@@ -1,7 +1,7 @@
 package Net::Delicious;
 use strict;
 
-# $Id: Delicious.pm,v 1.24 2004/10/01 17:25:28 asc Exp $
+# $Id: Delicious.pm,v 1.27 2004/10/06 03:20:26 asc Exp $
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.8';
+$Net::Delicious::VERSION = '0.9';
 
 use HTTP::Request;
 use LWP::UserAgent;
@@ -162,6 +162,45 @@ sub add_post {
     my @params = ("url","description","extended","tags","dt");
 
     my $req    = $self->_buildrequest(API_POSTSADD,$args,@params);
+    my $res    = $self->_sendrequest($req);
+
+    #
+
+    return $self->_isdone($res);
+}
+
+=head2 $obj->delete_post(\%args)
+
+Delete a post from del.icio.us.
+
+Valid arguments are :
+
+=over 4
+
+=item * B<url>
+
+String. I<required>
+
+=back
+
+Returns true or false.
+
+=cut
+
+sub delete_post {
+    my $self = shift;
+    my $args = shift;
+
+    if (! $args->{url}) {
+	$self->logger()->error("you must define a URL");
+	return 0;
+    }
+
+    #
+
+    my @params = ("url");
+
+    my $req    = $self->_buildrequest(API_POSTSDELETE,$args,@params);
     my $res    = $self->_sendrequest($req);
 
     #
@@ -661,7 +700,7 @@ sub _sendrequest {
 
     while (time < $self->{'__wait'}) {
 
-	my $debug_msg = sprintf("trying not to beat up on service, pause for %d seconds",
+	my $debug_msg = sprintf("trying not to beat up on service, pause for %.2f seconds\n",
 				PAUSE_SECONDS_OK);
 
 	$self->logger()->debug($debug_msg);
@@ -772,7 +811,7 @@ sub _ua {
 
     if (ref($self->{'__ua'}) ne "LWP::UserAgent") {
 	my $ua = LWP::UserAgent->new();
-	$ua->agent(__PACKAGE__);
+	$ua->agent(sprintf("%s, %s",__PACKAGE__,$Net::Delicious::VERSION));
 
 	$self->{'__ua'} = $ua;
     }
@@ -888,11 +927,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.8
+0.9
 
 =head1 DATE 
 
-$Date: 2004/10/01 17:25:28 $
+$Date: 2004/10/06 03:20:26 $
 
 =head1 AUTHOR
 
@@ -904,7 +943,7 @@ http://del.icio.us/doc/api
 
 =head1 NOTES
 
-The version number (0.8) reflects the fact the del.icio.us API
+The version number (0.9) reflects the fact the del.icio.us API
 still has a great big "I am a moving target" disclaimer around
 its neck.
 

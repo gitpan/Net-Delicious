@@ -1,7 +1,7 @@
 package Net::Delicious::Post;
 use strict;
 
-# $Id: Post.pm,v 1.8 2004/09/20 22:37:24 asc Exp $
+# $Id: Post.pm,v 1.10 2004/10/05 21:09:40 asc Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Post::VERSION = '0.3';
+$Net::Delicious::Post::VERSION = '0.4';
 
 use Net::Delicious::User;
 use overload q("") => sub { shift->href() };
@@ -62,7 +62,7 @@ sub new {
     
     my %self = map { 
 	$_ => $args->{ $_ };
-    } qw ( description extended href tags time );
+    } qw ( description extended href tags time parent);
 
     #
 
@@ -105,6 +105,7 @@ Returns a string.
 
 =cut
 
+*url  = \&href;
 *link = \&href;
 
 sub href {
@@ -157,11 +158,11 @@ sub time {
 
 =head1 VERSION
 
-0.2
+0.4
 
 =head1 DATE
 
-$Date: 2004/09/20 22:37:24 $
+$Date: 2004/10/05 21:09:40 $
 
 =head1 AUTHOR
 
