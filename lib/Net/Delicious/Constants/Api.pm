@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Api;
 use strict;
 
-# $Id: Api.pm,v 1.4 2004/07/08 13:45:02 asc Exp $
+# $Id: Api.pm,v 1.5 2004/09/30 14:18:09 asc Exp $
 
 =head1 NAME
 
@@ -50,6 +50,7 @@ String.
 =cut
 
 use constant API_POSTSFORUSER_RECENT => join("/",LOCAL_API_POSTS,"recent");
+use constant API_POSTSFORUSER_ALL    => join("/",LOCAL_API_POSTS,"all");
 
 =head2 API_POSTSPERDATE
 
@@ -121,6 +122,7 @@ BEGIN {
     @EXPORT_OK = qw (API_POSTSPERDATE
 		     API_POSTSFORUSER
 		     API_POSTSFORUSER_RECENT
+		     API_POSTSFORUSER_ALL
 		     API_POSTSADD
 		     
 		     API_TAGSFORUSER
@@ -140,7 +142,7 @@ BEGIN {
 
 =head1 DATE
 
-$Date: 2004/07/08 13:45:02 $
+$Date: 2004/09/30 14:18:09 $
 
 =head1 AUTHOR
 

@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Pause;
 use strict;
 
-# $Id: Pause.pm,v 1.2 2004/09/16 21:43:21 asc Exp $
+# $Id: Pause.pm,v 1.4 2004/10/01 17:26:38 asc Exp $
 
 =head1 NAME
 
@@ -70,7 +70,7 @@ BEGIN {
 
 =head1 DATE
 
-$Date: 2004/09/16 21:43:21 $
+$Date: 2004/10/01 17:26:38 $
 
 =head1 AUTHOR
 

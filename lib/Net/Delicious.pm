@@ -1,7 +1,7 @@
 package Net::Delicious;
 use strict;
 
-# $Id: Delicious.pm,v 1.22 2004/09/20 14:06:09 asc Exp $
+# $Id: Delicious.pm,v 1.24 2004/10/01 17:25:28 asc Exp $
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ OOP for the del.icio.us API
 
 =cut
 
-$Net::Delicious::VERSION = '0.71';
+$Net::Delicious::VERSION = '0.8';
 
 use HTTP::Request;
 use LWP::UserAgent;
@@ -228,7 +228,7 @@ Filter by this tag.
 
 Int.
 
-Number of items to retrieve (defaults to 15)
+Number of posts to return. Default is 20; maximum is 100
 
 =back
 
@@ -250,6 +250,30 @@ sub recent_posts {
 				  $args,
 				  @params);
 
+   my $res = $self->_sendrequest($req);
+
+   if (! $res) {
+       return (wantarray) ? () : undef;
+   }
+
+   my $posts = $self->_getresults($res,"post");
+   return $self->_buildresults("Post",$posts);
+}
+
+=head2 $obj->all_posts()
+
+Returns a list of I<Net::Delicious::Post> objects
+when called in an array context.
+
+Returns a I<Net::Delicious::Iterator> object when called
+in a scalar context.
+
+=cut
+
+sub all_posts {
+   my $self = shift;
+
+   my $req = $self->_buildrequest(API_POSTSFORUSER_ALL);
    my $res = $self->_sendrequest($req);
 
    if (! $res) {
@@ -864,11 +888,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.71
+0.8
 
 =head1 DATE 
 
-$Date: 2004/09/20 14:06:09 $
+$Date: 2004/10/01 17:25:28 $
 
 =head1 AUTHOR
 
@@ -880,7 +904,7 @@ http://del.icio.us/doc/api
 
 =head1 NOTES
 
-The version number (0.71) reflects the fact the del.icio.us API
+The version number (0.8) reflects the fact the del.icio.us API
 still has a great big "I am a moving target" disclaimer around
 its neck.
 
