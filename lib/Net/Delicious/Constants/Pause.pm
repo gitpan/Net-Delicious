@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Pause;
 use strict;
 
-# $Id: Pause.pm,v 1.4 2004/10/01 17:26:38 asc Exp $
+# $Id: Pause.pm,v 1.5 2005/04/05 15:56:50 asc Exp $
 
 =head1 NAME
 
@@ -70,7 +70,7 @@ BEGIN {
 
 =head1 DATE
 
-$Date: 2004/10/01 17:26:38 $
+$Date: 2005/04/05 15:56:50 $
 
 =head1 AUTHOR
 
@@ -84,7 +84,7 @@ L<Net::Delicious::Constants>
 
 =head1 LICENSE
 
-Copyright (c) 2004 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

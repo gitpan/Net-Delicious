@@ -1,7 +1,7 @@
 package Net::Delicious::User;
 use strict;
 
-# $Id: User.pm,v 1.1 2004/03/04 14:45:46 asc Exp $
+# $Id: User.pm,v 1.2 2005/04/05 15:56:50 asc Exp $
 
 =head1 NAME
 
@@ -85,7 +85,7 @@ sub name {
 
 =head1 DATE
 
-$Date: 2004/03/04 14:45:46 $
+$Date: 2005/04/05 15:56:50 $
 
 =head1 AUTHOR
 
@@ -97,7 +97,7 @@ L<Net::Delicious>
 
 =head1 LICENSE
 
-Copyright (c) 2004 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

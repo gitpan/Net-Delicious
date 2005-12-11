@@ -182,6 +182,38 @@ OBJECT METHODS
 
     Returns true or false.
 
+  $obj->bundles()
+    Returns a list of *Net::Delicious::Bundle* objects when called in an
+    array context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+  $obj->set_bundle(\%args)
+    Valid arguments are :
+
+    * bundle
+        String. *required*
+
+        The name of the bundle to set.
+
+    * tags
+        String. *required*
+
+        A space-separated list of tags.
+
+    Returns true or false
+
+  $obj->delete_bundle(\%args)
+    Valid arguments are :
+
+    * bundle
+        String. *required*
+
+        The name of the bundle to set
+
+    Returns true or false
+
   $obj->inbox_for_date(\%args)
     Get a list of inbox entries.
 
@@ -259,10 +291,10 @@ ERRORS
     to provide it with a dispatcher.
 
 VERSION
-    0.92
+    0.93
 
 DATE
-    $Date: 2004/12/12 22:42:48 $
+    $Date: 2005/04/06 04:58:22 $
 
 AUTHOR
     Aaron Straup Cope <ascope@cpan.org>
@@ -277,7 +309,7 @@ NOTES
     This package implements the API in its entirety as of *DATE*.
 
 LICENSE
-    Copyright (c) 2004, Aaron Straup Cope. All Rights Reserved.
+    Copyright (c) 2004-2005, Aaron Straup Cope. All Rights Reserved.
 
     This is free software, you may use it and distribute it under the same
     terms as Perl itself.

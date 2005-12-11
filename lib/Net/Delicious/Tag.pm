@@ -1,7 +1,7 @@
 package Net::Delicious::Tag;
 use strict;
 
-# $Id: Tag.pm,v 1.6 2004/03/04 14:45:45 asc Exp $
+# $Id: Tag.pm,v 1.7 2005/04/05 15:56:50 asc Exp $
 
 =head1 NAME
 
@@ -63,7 +63,7 @@ sub new {
 	$_ => $args->{ $_ }
     } qw ( tag count );
 
-    return bless \%self, $pkg;    
+    return bless \%self, $pkg; 
 }
 
 =head1 OBJECT METHODS
@@ -98,7 +98,7 @@ sub tag {
 
 =head1 DATE
 
-$Date: 2004/03/04 14:45:45 $
+$Date: 2005/04/05 15:56:50 $
 
 =head1 AUTHOR
 
@@ -110,7 +110,7 @@ L<Net::Delicious>
 
 =head1 LICENSE
 
-Copyright (c) 2004 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

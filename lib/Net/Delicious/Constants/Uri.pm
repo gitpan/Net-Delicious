@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Uri;
 use strict;
 
-# $Id: Uri.pm,v 1.3 2004/01/30 22:59:50 asc Exp $
+# $Id: Uri.pm,v 1.4 2005/04/05 15:56:50 asc Exp $
 
 =head1 NAME
 
@@ -52,7 +52,7 @@ BEGIN {
 
 =head1 DATE
 
-$Date: 2004/01/30 22:59:50 $
+$Date: 2005/04/05 15:56:50 $
 
 =head1 AUTHOR
 
@@ -66,7 +66,7 @@ L<Net::Delicious::Constants>
 
 =head1 LICENSE
 
-Copyright (c) 2004 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

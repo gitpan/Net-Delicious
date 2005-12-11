@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.30 2004/12/12 22:42:48 asc Exp $
+# $Id: Delicious.pm,v 1.32 2005/04/06 04:58:22 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '0.92';
+$Net::Delicious::VERSION = '0.93';
 
 =head1 NAME
 
@@ -506,6 +506,115 @@ sub rename_tag {
     my $res = $self->_sendrequest($req);
     
     #
+
+    return $self->_isdone($res);
+}
+
+=head2 $obj->bundles()
+
+Returns a list of I<Net::Delicious::Bundle> objects
+when called in an array context.
+
+Returns a I<Net::Delicious::Iterator> object when called
+in a scalar context.
+
+=cut
+
+sub bundles {
+    my $self = shift;
+
+    my $req = $self->_buildrequest(API_BUNDLES_ALL);
+    my $res = $self->_sendrequest($req);
+     
+    my $bundles = $self->_getresults($res,"bundle");
+    $bundles    = $bundles->[0];
+
+    if (ref($bundles) ne "HASH") {
+	$self->logger()->error("failed to parse response");
+	return undef;
+    }
+
+    # argh....
+
+    my @data = ();
+
+    if (exists($bundles->{name})) {
+	@data = $bundles;
+    }
+    
+    else {
+	@data = map { 
+	    {name=>$_,tags=>$bundles->{$_}->{'tags'} }
+	} keys %$bundles;
+    }
+
+    #
+
+    return $self->_buildresults("Bundle",\@data);
+}
+
+=head2 $obj->set_bundle(\%args)
+
+Valid arguments are :
+
+=over 4
+
+=item * B<bundle> 
+
+String. I<required>
+
+The name of the bundle to set.
+
+=item * B<tags>
+
+String. I<required>
+
+A space-separated list of tags.
+
+=back
+
+Returns true or false
+
+=cut
+
+sub set_bundle {
+    my $self = shift;
+    my $args = shift;
+
+    my @params = ("bundle","tags");
+
+    my $req = $self->_buildrequest(API_BUNDLES_SET,$args,@params);
+    my $res = $self->_sendrequest($req);
+
+    return $self->_isdone($res);
+}
+
+=head2 $obj->delete_bundle(\%args)
+
+Valid arguments are :
+
+=over 4
+
+=item * B<bundle> 
+
+String. I<required>
+
+The name of the bundle to set
+
+=back
+
+Returns true or false
+
+=cut
+
+sub delete_bundle {
+    my $self = shift;
+    my $args = shift;
+
+    my @params = ("bundle");
+
+    my $req = $self->_buildrequest(API_BUNDLES_DELETE,$args,@params);
+    my $res = $self->_sendrequest($req);
 
     return $self->_isdone($res);
 }
@@ -1032,6 +1141,10 @@ sub _isdone {
 	return 1;
     }
 
+    elsif ($res eq RESPONSE_OK) {
+	return 1;
+    }
+
     elsif ((ref($res) eq "HASH") &&
 	(exists($res->{code})) &&
 	($res->{code} eq RESPONSE_DONE)) {
@@ -1053,11 +1166,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.92
+0.93
 
 =head1 DATE 
 
-$Date: 2004/12/12 22:42:48 $
+$Date: 2005/04/06 04:58:22 $
 
 =head1 AUTHOR
 
@@ -1077,7 +1190,7 @@ This package implements the API in its entirety as of I<DATE>.
 
 =head1 LICENSE
 
-Copyright (c) 2004, Aaron Straup Cope. All Rights Reserved.
+Copyright (c) 2004-2005, Aaron Straup Cope. All Rights Reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

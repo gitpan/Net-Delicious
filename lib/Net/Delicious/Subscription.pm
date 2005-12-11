@@ -1,7 +1,7 @@
 package Net::Delicious::Subscription;
 use strict;
 
-# $Id: Subscription.pm,v 1.4 2004/01/30 22:59:50 asc Exp $
+# $Id: Subscription.pm,v 1.5 2005/04/05 15:56:50 asc Exp $
 
 =head1 NAME
 
@@ -111,7 +111,7 @@ sub url {
 
 =head1 DATE
 
-$Date: 2004/01/30 22:59:50 $
+$Date: 2005/04/05 15:56:50 $
 
 =head1 AUTHOR
 
@@ -123,7 +123,7 @@ L<Net::Delicious>
 
 =head1 LICENSE
 
-Copyright (c) 2004 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

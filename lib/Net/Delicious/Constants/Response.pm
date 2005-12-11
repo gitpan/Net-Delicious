@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Response;
 use strict;
 
-# $Id: Response.pm,v 1.3 2004/01/30 22:59:50 asc Exp $
+# $Id: Response.pm,v 1.4 2005/04/05 15:56:50 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us response messages.
 
 =cut
 
-$Net::Delicious::Constants::Response::VERSION = '0.1';
+$Net::Delicious::Constants::Response::VERSION = '0.2';
 
 =head1 CONSTANTS
 
@@ -39,21 +39,24 @@ String.
 
 use constant RESPONSE_DONE  => "done";
 
+use constant RESPONSE_OK => "ok";
+
 BEGIN {
     use vars qw (@EXPORT_OK);
 
     @EXPORT_OK = qw (RESPONSE_ERROR
-		     RESPONSE_DONE);
+		     RESPONSE_DONE
+		     RESPONSE_OK);
 }
 
 
 =head1 VERSION
 
-0.1
+0.2
 
 =head1 DATE
 
-$Date: 2004/01/30 22:59:50 $
+$Date: 2005/04/05 15:56:50 $
 
 =head1 AUTHOR
 
@@ -67,7 +70,7 @@ L<Net::Delicious::Constants>
 
 =head1 LICENSE
 
-Copyright (c) 2004 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

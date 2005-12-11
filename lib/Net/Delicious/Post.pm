@@ -1,7 +1,7 @@
 package Net::Delicious::Post;
 use strict;
 
-# $Id: Post.pm,v 1.11 2004/10/08 14:12:30 asc Exp $
+# $Id: Post.pm,v 1.12 2005/04/05 15:56:50 asc Exp $
 
 =head1 NAME
 
@@ -168,7 +168,7 @@ sub time {
 
 =head1 DATE
 
-$Date: 2004/10/08 14:12:30 $
+$Date: 2005/04/05 15:56:50 $
 
 =head1 AUTHOR
 
@@ -180,7 +180,7 @@ L<Net::Delicious>
 
 =head1 LICENSE
 
-Copyright (c) 2004 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

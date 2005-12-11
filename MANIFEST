@@ -1,6 +1,7 @@
 Build.PL
 Changes
 lib/Net/Delicious.pm
+lib/Net/Delicious/Bundle.pm
 lib/Net/Delicious/Constants.pm
 lib/Net/Delicious/Constants/Api.pm
 lib/Net/Delicious/Constants/Pause.pm
@@ -13,6 +14,7 @@ lib/Net/Delicious/Subscription.pm
 lib/Net/Delicious/Tag.pm
 lib/Net/Delicious/User.pm
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 META.yml
 README

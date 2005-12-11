@@ -1,39 +1,41 @@
---- #YAML:1.0
+---
 name: Net-Delicious
-version: 0.92
+version: 0.93
 author:
   - Aaron Straup Cope <ascope@cpan.org>
 abstract: OOP for the del.icio.us API
 license: perl
 requires:
-  Date::Parse: '>= 2.27'
-  File::Spec: '>= 0.8'
-  FileHandle: '>= 2'
+  Date::Parse: >= 2.27
+  File::Spec: >= 0.8
+  FileHandle: >= 2
   HTTP::Request: ''
-  IO::AtomicFile: '>= 2.1'
+  IO::AtomicFile: >= 2.1
   LWP::UserAgent: ''
-  Log::Dispatch: '>= 2'
-  Time::HiRes: '>= 1.65'
-  XML::Simple: '>= 2'
-  YAML: '>= 0.35'
+  Log::Dispatch: >= 2
+  Time::HiRes: >= 1.65
+  XML::Simple: >= 2
+  YAML: >= 0.35
 build_requires:
-  Test::Simple: '>= 0.47'
+  Test::Simple: >= 0.47
 provides:
   Net::Delicious:
     file: lib/Net/Delicious.pm
-    version: 0.92
+    version: 0.93
+  Net::Delicious::Bundle:
+    file: lib/Net/Delicious/Bundle.pm
   Net::Delicious::Constants:
     file: lib/Net/Delicious/Constants.pm
     version: 0.1
   Net::Delicious::Constants::Api:
     file: lib/Net/Delicious/Constants/Api.pm
-    version: 0.3
+    version: 0.4
   Net::Delicious::Constants::Pause:
     file: lib/Net/Delicious/Constants/Pause.pm
     version: 0.1
   Net::Delicious::Constants::Response:
     file: lib/Net/Delicious/Constants/Response.pm
-    version: 0.1
+    version: 0.2
   Net::Delicious::Constants::Uri:
     file: lib/Net/Delicious/Constants/Uri.pm
     version: 0.1
@@ -55,4 +57,4 @@ provides:
   Net::Delicious::User:
     file: lib/Net/Delicious/User.pm
     version: 0.1
-generated_by: Module::Build version 0.25_02
+generated_by: Module::Build version 0.2611
