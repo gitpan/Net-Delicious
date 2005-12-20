@@ -1,32 +1,33 @@
----
+--- #YAML:1.0
 name: Net-Delicious
-version: 0.93
+version: 0.94
 author:
   - Aaron Straup Cope <ascope@cpan.org>
 abstract: OOP for the del.icio.us API
 license: perl
 requires:
-  Date::Parse: >= 2.27
-  File::Spec: >= 0.8
-  FileHandle: >= 2
+  Date::Parse: '>= 2.27'
+  File::Spec: '>= 0.8'
+  FileHandle: '>= 2'
   HTTP::Request: ''
-  IO::AtomicFile: >= 2.1
+  IO::AtomicFile: '>= 2.1'
   LWP::UserAgent: ''
-  Log::Dispatch: >= 2
-  Time::HiRes: >= 1.65
-  XML::Simple: >= 2
-  YAML: >= 0.35
+  Log::Dispatch: '>= 2'
+  Time::HiRes: '>= 1.65'
+  XML::Simple: '>= 2'
+  YAML: '>= 0.35'
 build_requires:
-  Test::Simple: >= 0.47
+  Test::Simple: '>= 0.47'
 provides:
   Net::Delicious:
     file: lib/Net/Delicious.pm
-    version: 0.93
+    version: 0.94
   Net::Delicious::Bundle:
     file: lib/Net/Delicious/Bundle.pm
+    version: 0.94
   Net::Delicious::Constants:
     file: lib/Net/Delicious/Constants.pm
-    version: 0.1
+    version: 0.94
   Net::Delicious::Constants::Api:
     file: lib/Net/Delicious/Constants/Api.pm
     version: 0.4
@@ -41,20 +42,23 @@ provides:
     version: 0.1
   Net::Delicious::Date:
     file: lib/Net/Delicious/Date.pm
-    version: 0.1
+    version: 0.94
   Net::Delicious::Iterator:
     file: lib/Net/Delicious/Iterator.pm
-    version: 0.1
+    version: 0.94
+  Net::Delicious::Object:
+    file: lib/Net/Delicious/Object.pm
+    version: 0.94
   Net::Delicious::Post:
     file: lib/Net/Delicious/Post.pm
-    version: 0.5
+    version: 0.94
   Net::Delicious::Subscription:
     file: lib/Net/Delicious/Subscription.pm
-    version: 0.1
+    version: 0.94
   Net::Delicious::Tag:
     file: lib/Net/Delicious/Tag.pm
-    version: 0.2
+    version: 0.94
   Net::Delicious::User:
     file: lib/Net/Delicious/User.pm
-    version: 0.1
-generated_by: Module::Build version 0.2611
+    version: 0.94
+generated_by: Module::Build version 0.2604

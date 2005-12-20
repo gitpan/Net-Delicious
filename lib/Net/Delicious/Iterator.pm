@@ -1,7 +1,9 @@
-package Net::Delicious::Iterator;
+# $Id: Iterator.pm,v 1.5 2005/12/17 19:04:14 asc Exp $
 use strict;
 
-# $Id: Iterator.pm,v 1.4 2005/04/05 15:56:50 asc Exp $
+package Net::Delicious::Iterator;
+
+$Net::Delicious::Iterator::VERSION = '0.94';
 
 =head1 NAME
 
@@ -30,8 +32,6 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Iterator::VERSION = '0.1';
-
 =head1 PACKAGE METHODS
 
 =cut
@@ -43,8 +43,8 @@ Returns a I<Net::Delicious::Iterator> object. Woot!
 =cut
 
 sub new {
-  my $pkg = shift;
-  return bless {pkg=>$_[0],data=>$_[1],count=>0}, $pkg;
+        my $pkg = shift;
+        return bless {pkg=>$_[0],data=>$_[1],count=>0}, $pkg;
 }
 
 =head2 $it->count()
@@ -54,8 +54,8 @@ Return the number of available thingies.
 =cut
 
 sub count {
-  my $self = shift;
-  return scalar @{$self->{data}};
+        my $self = shift;
+        return scalar @{$self->{data}};
 }
 
 =head2 $it->next()
@@ -65,25 +65,25 @@ Returns the next object in the list of available thingies. Woot!
 =cut 
 
 sub next {
-  my $self = shift;
-  if (my $data = $self->{data}->[$self->{count}++]) {
-    return $self->{pkg}->new($data);
-  }
+        my $self = shift;
+        if (my $data = $self->{data}->[$self->{count}++]) {
+                return $self->{pkg}->new($data);
+        }
 }
 
 sub reset {
-    my $self = shift;
-    $self->{count} = 0;
+        my $self = shift;
+        $self->{count} = 0;
 }
 
 
 =head1 VERSION
 
-0.1
+0.94
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/17 19:04:14 $
 
 =head1 AUTHOR
 

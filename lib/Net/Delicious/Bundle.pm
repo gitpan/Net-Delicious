@@ -1,5 +1,12 @@
-# $Id: Bundle.pm,v 1.3 2005/04/06 04:58:22 asc Exp $
+# $Id: Bundle.pm,v 1.5 2005/12/18 17:59:15 asc Exp $
 use strict;
+
+package Net::Delicious::Bundle;
+use base qw (Net::Delicious::Object);
+
+$Net::Delicious::Bundle::VERSION = '0.94';
+
+use overload q("") => sub { shift->name(); };
 
 =head1 NAME
 
@@ -40,10 +47,6 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-package Net::Delicious::Bundle;
-
-use overload q("") => sub { shift->name(); };
-
 =head1 PACKAGE METHODS
 
 =cut
@@ -54,16 +57,7 @@ Returns a I<Net::Delicious::Bundle> object. Woot!
 
 =cut
 
-sub new {
-    my $pkg  = shift;
-    my $args = shift;
-
-    my %self = map {
-	$_ => $args->{ $_ }
-    } qw ( name tags );
-
-    return bless \%self, $pkg;     
-}
+# Defined in Net::Delicious::Object
 
 =head1 OBJECT METHODS
 
@@ -81,28 +75,41 @@ sub name {
 
 =head2 $obj->tags()
 
-Returns a string.
+Returns a list.
 
 =cut
 
 sub tags {
-    my $self = shift;
-    my $tags = $self->{tags};
+        my $self = shift;
+        my $tags = $self->{tags};
+        
+        if (wantarray) {
+                return (split(" ",$tags));
+        }
+        
+        return $tags;
+}
 
-    if (! wantarray) {
-	return $tags;
-    }
+=head2 $obj->as_hashref()
 
-    return split(" ",$tags);
+Return the object as a hash ref safe for serializing and re-blessing.
+
+=cut
+
+# Defined in Net::Delicious::Object
+
+sub _properties {
+        my $pkg = shift;
+        return qw ( name tags );
 }
 
 =head1 VERSION
 
-0.1
+0.94
 
 =head1 DATE
 
-$Date: 2005/04/06 04:58:22 $
+$Date: 2005/12/18 17:59:15 $
 
 =head1 AUTHOR
 

@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.32 2005/04/06 04:58:22 asc Exp $
+# $Id: Delicious.pm,v 1.35 2005/12/20 06:46:41 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '0.93';
+$Net::Delicious::VERSION = '0.94';
 
 =head1 NAME
 
@@ -35,7 +35,7 @@ use LWP::UserAgent;
 use XML::Simple;
 
 use Log::Dispatch;
-use YAML;
+use Data::Dumper;
 
 use Time::HiRes;
 
@@ -53,9 +53,14 @@ use English;
 
 =cut
 
-=head2 __PACKAGE__->new(\%args)
+=head2 __PACKAGE__->new(\%args || Config::Simple)
 
-Valid arguments are :
+Arguments to the Net::Delicious object may be defined in one of three ways :
+As a single hash reference or; As a reference to a I<Config::Simple> object; as
+a path to a file that may be read by the I<Config::Simple>.
+
+The first option isn't going away any time soon but should be considered as
+deprecated. Valid hash reference arguments are :
 
 =over 4
 
@@ -91,44 +96,117 @@ Add a I<Log::Dispatch::Screen> dispatcher to log debug
 
 =back
 
-Returns a Net::Delicious object. Woot!
+I<Config::Simple> options are expected to be grouped in a "block"
+labeled B<delicious>. Valid options are :
+
+=over 4
+
+=item * B<user> 
+
+String. I<required>
+
+Your del.icio.us username.
+
+=item * B<pswd>
+
+String. I<required>
+
+Your del.icio.us password.
+
+=item * B<updates>
+
+String.
+
+The path to a directory where the timestamp for the last
+update to your bookmarks can be recorded. This is used by
+the I<all_posts> method to prevent abusive requests.
+
+Default is the current user's home directory, followed by
+a temporary directory as determined by File::Temp.
+
+=item * B<debug>
+
+Boolean.
+
+Add a I<Log::Dispatch::Screen> dispatcher to log debug 
+(and higher) notices. Notices will be printed to STDERR.
+
+=back
+
+Returns a Net::Delicious object or undef if there was a problem
+creating the object.
 
 =cut
 
 sub new {
-    my $pkg  = shift;
-    my $args = shift;
+        my $pkg  = shift;
+        my $args = shift;
+        
+        #
+        
+        my $self = {
+                    '__wait'    => 0,
+                    '__paused'  => 0,
+                   };
+        
+        #
 
-    #
+        my $cfg = undef;
 
-    my $self = {__user   => $args->{user},
-		__pswd   => $args->{pswd},
+        if (ref($args) eq "Config::Simple") {
+                $cfg = $args;
+        }
 
-		# flags for throttling
-		__wait   => 0,
-		__paused => 0,
-	    };
+        elsif (ref($args->{cfg}) eq "Config::Simple") {
+                $cfg = $args->{cfg};
+        }
 
-    # flags for recording last updates
+        elsif (-f $args->{cfg}) {
+                eval {
+                        require Config::Simple;
+                        $cfg = Config::Simple->new($args->{cfg});
+                };
 
-    if ($args->{'updates'}) {
-	$self->{'__updates'} = $args->{'__updates'};
-    }
+                if ($@) {
+                        warn "Failed to load config $args->{cfg}, $@";
+                        return;
+                }
+        }
 
-    bless $self, $pkg;
+        else {}
+                
+        #
 
-    #
+        if ($cfg) {
+                $self->{'__user'}    = $cfg->param("delicious.user");
+                $self->{'__pswd'}    = $cfg->param("delicious.pswd");
+                $self->{'__updates'} = $cfg->param("delicious.updates");
+        }
 
-    if ($args->{debug}) {
-	require Log::Dispatch::Screen;
-	$self->logger()->add(Log::Dispatch::Screen->new(name      => "debug",
-							min_level => "debug",
-							stderr    => 1));
-    }
+        else {
+                $self->{'__user'}    = $args->{'user'};
+                $self->{'__pswd'}    = $args->{'pswd'};
+                $self->{'__updates'} = $args->{'updates'};
+        }
 
-    #
+        #
 
-    return $self;
+        bless $self, $pkg;
+
+        #
+
+        my $debug = ($cfg) ? $cfg->param("delicious.debug") : $args->{'debug'};
+
+        if ($debug) {
+                require Log::Dispatch::Screen;
+                $self->logger()->add(Log::Dispatch::Screen->new(name      => "debug",
+                                                                min_level => "debug",
+                                                                stderr    => 1));
+        }
+
+        #
+        
+        return $self;
 }
 
 =head1 OBJECT METHODS
@@ -273,7 +351,7 @@ sub posts_per_date {
     my $res = $self->_sendrequest($req);
 
     if (! $res) {
-	return (wantarray) ? () : undef;
+            return;
     }
 
     my $dates = $self->_getresults($res,"date");
@@ -323,7 +401,7 @@ sub recent_posts {
    my $res = $self->_sendrequest($req);
 
    if (! $res) {
-       return (wantarray) ? () : undef;
+           return;
    }
 
    my $posts = $self->_getresults($res,"post");
@@ -345,22 +423,89 @@ context.)
 =cut
 
 sub all_posts {
-   my $self = shift;
+        my $self = shift;
 
-   if (! $self->_is_updated()) {
-       $self->logger()->info("posts have not changed since last call");
-       return (wantarray) ? () : undef;       
-   }
+        if (! $self->_is_updated()) {
+                $self->logger()->info("posts have not changed since last call");
+                return;
+        }
 
-   my $req = $self->_buildrequest(API_POSTSFORUSER_ALL);
-   my $res = $self->_sendrequest($req);
+        my $req = $self->_buildrequest(API_POSTSFORUSER_ALL);
+        my $res = $self->_sendrequest($req);
+        
+        if (! $res) {
+                return;
+        }
+        
+        my $posts = $self->_getresults($res,"post");
+        return $self->_buildresults("Post",$posts);
+}
 
-   if (! $res) {
-       return (wantarray) ? () : undef;
-   }
+=head2 $obj->all_posts_for_tag(\%args)
 
-   my $posts = $self->_getresults($res,"post");
-   return $self->_buildresults("Post",$posts);
+This is a just a helper method which hides a bunch of API calls behind
+a single method.
+
+Valid arguments are :
+
+=over 4
+
+=item * B<tag>
+
+String. I<required>
+
+The tag you want to retrieve posts for.
+
+=back
+
+Returns a list of I<Net::Delicious::Post> objects
+when called in an array context.
+
+Returns a I<Net::Delicious::Iterator> object when called
+in a scalar context.
+
+=cut
+
+sub all_posts_for_tag {
+        my $self = shift;
+        my $args = shift;
+        
+        $args ||= {};
+        
+        if (! $args->{tag}) {
+                $self->logger()->error("You must specify a tag");
+                return;
+        }
+
+        my $it = $self->posts_per_date({tag=>$args->{tag}});
+
+        if (! $it) {
+                return;
+        }
+
+        my @posts = ();
+
+        while (my $dt = $it->next()) {
+
+                my @links = $self->posts({tag => $args->{tag},
+                                          dt  => $dt->date()});
+
+                if (wantarray) {
+                        push @posts, @links;
+                }
+                
+                else {
+                        map {
+                                push @posts, $_->as_hashref();
+                        } @links;
+                }
+        }
+
+        if (wantarray) {
+                return @posts;
+        }
+
+        return $self->_buildresults("Post",\@posts);
 }
 
 =head2 $obj->update()
@@ -371,12 +516,12 @@ a W3CDTF string.
 =cut
 
 sub update {
-   my $self = shift;
+        my $self = shift;
 
-   my $req = $self->_buildrequest(API_POSTSFORUSER_UPDATE);
-   my $res = $self->_sendrequest($req);
-
-   return ($res) ? $res->{time} : undef;
+        my $req = $self->_buildrequest(API_POSTSFORUSER_UPDATE);
+        my $res = $self->_sendrequest($req);
+        
+        return ($res) ? $res->{time} : undef;
 }
 
 =head2 $obj->posts(\%args)
@@ -411,27 +556,27 @@ in a scalar context.
 =cut
 
 sub posts {
-    my $self = shift;
-    my $args = shift;
-
-    #
-
-    my @params = ("tag","dt");
+        my $self = shift;
+        my $args = shift;
+        
+        #
+        
+        my @params = ("tag","dt","url");
+        
+        my $req = $self->_buildrequest(API_POSTSFORUSER,
+                                       $args,
+                                       @params);
+        
+        my $res = $self->_sendrequest($req);
+        
+        if (! $res) {
+                return;
+        }
     
-    my $req = $self->_buildrequest(API_POSTSFORUSER,
-				   $args,
-				   @params);
-    
-    my $res = $self->_sendrequest($req);
-    
-    if (! $res) {
-	return (wantarray) ? () : undef;
-    }
-    
-    #
-
-    my $posts = $self->_getresults($res,"post");
-    return $self->_buildresults("Post",$posts);
+        #
+        
+        my $posts = $self->_getresults($res,"post");
+        return $self->_buildresults("Post",$posts);
 }
 
 =head2 $obj->tags()
@@ -441,19 +586,19 @@ Returns a list of tags.
 =cut
 
 sub tags {
-    my $self = shift;
+        my $self = shift;
+        
+        my $req = $self->_buildrequest(API_TAGSFORUSER);
+        my $res = $self->_sendrequest($req);
+        
+        if (! $res) {
+                return;
+        }
 
-    my $req = $self->_buildrequest(API_TAGSFORUSER);
-    my $res = $self->_sendrequest($req);
+        #
 
-    if (! $res) {
-	return (wantarray) ? () : undef;
-    }
-
-    #
-
-    my $tags = $self->_getresults($res,"tag");
-    return $self->_buildresults("Tag",$tags);
+        my $tags = $self->_getresults($res,"tag");
+        return $self->_buildresults("Tag",$tags);
 }
 
 =head2 $obj->rename_tag(\%args)
@@ -483,31 +628,31 @@ Returns true or false.
 =cut
 
 sub rename_tag {
-    my $self = shift;
-    my $args = shift;
-
-    #
-
-    foreach my $el ("old","new") {
-	if (! exists($args->{$el})) {
-	    $self->logger()->error("you must define a '$el' element");
-	    return 0;
-	}
-    }
-
-    #
-
-    my @params = ("old","new");
-    
-    my $req = $self->_buildrequest(API_TAGSRENAME,
-				  $args,
-				  @params);
-    
-    my $res = $self->_sendrequest($req);
-    
-    #
-
-    return $self->_isdone($res);
+        my $self = shift;
+        my $args = shift;
+        
+        #
+        
+        foreach my $el ("old","new") {
+                if (! exists($args->{$el})) {
+                        $self->logger()->error("you must define a '$el' element");
+                        return 0;
+                }
+        }
+        
+        #
+        
+        my @params = ("old","new");
+        
+        my $req = $self->_buildrequest(API_TAGSRENAME,
+                                       $args,
+                                       @params);
+        
+        my $res = $self->_sendrequest($req);
+        
+        #
+        
+        return $self->_isdone($res);
 }
 
 =head2 $obj->bundles()
@@ -521,36 +666,36 @@ in a scalar context.
 =cut
 
 sub bundles {
-    my $self = shift;
+        my $self = shift;
+        
+        my $req = $self->_buildrequest(API_BUNDLES_ALL);
+        my $res = $self->_sendrequest($req);
+        
+        my $bundles = $self->_getresults($res,"bundle");
+        $bundles    = $bundles->[0];
+        
+        if (ref($bundles) ne "HASH") {
+                $self->logger()->error("failed to parse response");
+                return;
+        }
 
-    my $req = $self->_buildrequest(API_BUNDLES_ALL);
-    my $res = $self->_sendrequest($req);
-     
-    my $bundles = $self->_getresults($res,"bundle");
-    $bundles    = $bundles->[0];
+        # argh....
 
-    if (ref($bundles) ne "HASH") {
-	$self->logger()->error("failed to parse response");
-	return undef;
-    }
+        my @data = ();
 
-    # argh....
-
-    my @data = ();
-
-    if (exists($bundles->{name})) {
-	@data = $bundles;
-    }
-    
-    else {
-	@data = map { 
-	    {name=>$_,tags=>$bundles->{$_}->{'tags'} }
-	} keys %$bundles;
-    }
-
-    #
-
-    return $self->_buildresults("Bundle",\@data);
+        if (exists($bundles->{name})) {
+                @data = $bundles;
+        }
+        
+        else {
+                @data = map { 
+                        {name=>$_,tags=>$bundles->{$_}->{'tags'} }
+                } keys %$bundles;
+        }
+        
+        #
+        
+        return $self->_buildresults("Bundle",\@data);
 }
 
 =head2 $obj->set_bundle(\%args)
@@ -578,15 +723,15 @@ Returns true or false
 =cut
 
 sub set_bundle {
-    my $self = shift;
-    my $args = shift;
-
-    my @params = ("bundle","tags");
-
-    my $req = $self->_buildrequest(API_BUNDLES_SET,$args,@params);
-    my $res = $self->_sendrequest($req);
-
-    return $self->_isdone($res);
+        my $self = shift;
+        my $args = shift;
+        
+        my @params = ("bundle","tags");
+        
+        my $req = $self->_buildrequest(API_BUNDLES_SET,$args,@params);
+        my $res = $self->_sendrequest($req);
+        
+        return $self->_isdone($res);
 }
 
 =head2 $obj->delete_bundle(\%args)
@@ -608,215 +753,87 @@ Returns true or false
 =cut
 
 sub delete_bundle {
-    my $self = shift;
-    my $args = shift;
-
-    my @params = ("bundle");
-
-    my $req = $self->_buildrequest(API_BUNDLES_DELETE,$args,@params);
-    my $res = $self->_sendrequest($req);
-
-    return $self->_isdone($res);
+        my $self = shift;
+        my $args = shift;
+        
+        my @params = ("bundle");
+        
+        my $req = $self->_buildrequest(API_BUNDLES_DELETE,$args,@params);
+        my $res = $self->_sendrequest($req);
+        
+        return $self->_isdone($res);
 }
 
 =head2 $obj->inbox_for_date(\%args)
 
-Get a list of inbox entries.
-
-Valid arguments are :
-
-=over 4
-
-=item * B<dt>
-
-String.
-
-Filter by this date
-
-=back
-
-Returns a list of I<Net::Delicious::Post> objects
-when called in an array context.
-
-Returns a I<Net::Delicious::Iterator> object when called
-in a scalar context.
+B<This method is no longer part of the del.icio.us API>. It will be removed
+from Net::Delicious in a subsequent release.
 
 =cut
 
 sub inbox_for_date {
-    my $self = shift;
-    my $args = shift;
-    
-    if (! $args->{dt}) {
-	$self->logger()->error("you must define a 'dt' parameter");
-	return 0;
-    }
+        my $self = shift;
 
-    #
-
-    my @params = ("dt");
-    
-    my $req = $self->_buildrequest(API_INBOXFORDATE,
-				  $args,
-				  @params);
-    
-    my $res = $self->_sendrequest($req);
-
-    if (! $res) {
-	return (wantarray) ? () : undef;
-    }
-
-    my $posts = $self->_getresults($res,"post");
-    return $self->_buildresults("Post",$posts);
+        $self->logger()->error("This method is no longer part of the del.icio.us API");
+        return;        
 }
 
 =head2 $obj->inbox_dates()
 
-Get a list of dates containing inbox entries.
-
-Returns a list of I<Net::Delicious::Date> objects
-when called in an array context.
-
-Returns a I<Net::Delicious::Iterator> object when called
-in a scalar context.
-
-I<This may be updated to return a Net::Delicious::Inbox
-object.>
+B<This method is no longer part of the del.icio.us API>. It will be removed
+from Net::Delicious in a subsequent release.
 
 =cut
 
 sub inbox_dates {
-    my $self = shift;
+        my $self = shift;
 
-    my $req = $self->_buildrequest(API_INBOXDATES);
-    my $res = $self->_sendrequest($req);
-
-    if (! $res) {
-	return (wantarray) ? () : undef;
-    }
-
-    my $dates = $self->_getresults($res,"date");
-
-    # Return an "Inbox" object ?
-    return $self->_buildresults("Date",$dates);
+        $self->logger()->error("This method is no longer part of the del.icio.us API");
+        return;
 }
 
 =head2 $obj->inbox_subscriptions()
 
-Get a list of your subscriptions.
-
-Returns a list of I<Net::Delicious::Subscription> objects
-when called in an array context.
-
-Returns a I<Net::Delicious::Iterator> object when called
-in a scalar context.
+B<This method is no longer part of the del.icio.us API>. It will be removed
+from Net::Delicious in a subsequent release.
 
 =cut
 
 sub inbox_subscriptions {
-    my $self = shift;
-
-    my $req = $self->_buildrequest(API_INBOXSUBS);
-    my $res = $self->_sendrequest($req);
-
-    if (! $res) {
-	return (wantarray) ? () : undef;
-    }
-
-    my $subs = $self->_getresults($res,"sub");
-    return $self->_buildresults("Subscription",$subs);
+        my $self = shift;
+        
+        $self->logger()->error("This method is no longer part of the del.icio.us API");
+        return;
 }
 
 =head2 $obj->add_inbox_subscription(\%args)
 
-Adds a subscription.
-
-Valid arguments are :
-
-=over 4
-
-=item * B<user>
-
-String. I<required>
-
-Username.
-
-=item * B<tag>
-
-String.
-
-Tag - leave blank for all posts
-
-=back
-
-Returns true or false.
+B<This method is no longer part of the del.icio.us API>. It will be removed
+from Net::Delicious in a subsequent release.
 
 =cut
 
 sub add_inbox_subscription {
-    my $self = shift;
-    my $args = shift;
-    
-    if (! $args->{user}) {
-	$self->logger()->error("you must define a 'user' parameter");
-	return 0;
-    }
+        my $self = shift;
+        my $args = shift;
 
-    my @params = ("user","tag");
-
-    my $req = $self->_buildrequest(API_INBOXADDSUB,$args,@params);
-    my $res = $self->_sendrequest($req);
-
-    # Temporary hack since all this API call
-    # returns in an "<ok />" without an XML 
-    # declaration...
-
-    return ($res) ? 1 : 0;
+        $self->logger()->error("This method is no longer part of the del.icio.us API");
+        return;        
 }
 
 =head2 $obj->remove_inbox_subscription(\%args)
 
-Valid arguments are :
-
-=over 4
-
-=item * B<user>
-
-String. I<required>
-
-Username.
-
-=item * B<tag>
-
-String.
-
-Tag - leave blank for all posts
-
-=back
-
-Returns true or false.
+B<This method is no longer part of the del.icio.us API>. It will be removed
+from Net::Delicious in a subsequent release.
 
 =cut
 
 sub remove_inbox_subscription {
-    my $self = shift;
-    my $args = shift;
-    
-    if (! $args->{user}) {
-	$self->logger()->error("you must define a 'user' parameter");
-	return 0;
-    }
+        my $self = shift;
+        my $args = shift;
 
-    my @params = ("user","tag");
-
-    my $req = $self->_buildrequest(API_INBOXUNSUB,$args,@params);
-    my $res = $self->_sendrequest($req);
-
-    # Temporary hack since all this API call
-    # returns in an "<ok />" without an XML 
-    # declaration...
-
-    return ($res) ? 1 : 0;
+        $self->logger()->error("This method is no longer part of the del.icio.us API");
+        return;
 }
 
 =head2 $obj->logger()
@@ -826,336 +843,335 @@ Returns a Log::Dispatch object.
 =cut
 
 sub logger {
-    my $self = shift;
-
-    if (ref($self->{'__logger'}) ne "Log::Dispatch") {
-	my $log = Log::Dispatch->new();
-	$self->{'__logger'} = $log;
-    }
-
-    return $self->{'__logger'};    
+        my $self = shift;
+        
+        if (ref($self->{'__logger'}) ne "Log::Dispatch") {
+                my $log = Log::Dispatch->new();
+                $self->{'__logger'} = $log;
+        }
+        
+        return $self->{'__logger'};    
 }
 
 sub _read_update {
-    my $self = shift;
-
-    my $path = $self->_path_update();
-    my $fh   = FileHandle->new($path);
-
-    if (! $fh) {
-	$self->logger()->error("unable to open '$path' for reading, $!");
-	return 0;
-    }
-
-    my $time = $fh->getline();
-    chomp $time;
-
-    $fh->close();
-    return $time;
+        my $self = shift;
+        
+        my $path = $self->_path_update();
+        my $fh   = FileHandle->new($path);
+        
+        if (! $fh) {
+                $self->logger()->error("unable to open '$path' for reading, $!");
+                return 0;
+        }
+        
+        my $time = $fh->getline();
+        chomp $time;
+        
+        $fh->close();
+        return $time;
 }
 
 sub _write_update {
-    my $self = shift;
-    my $time = shift;
-
-    my $path = $self->_path_update();
-    my $fh   = IO::AtomicFile->open($path,"w");
-
-    if (! $fh) {
-	$self->logger()->error("unable to open '$path' for writing, $!");
-	return 0;
-    }
-
-    $fh->print($time);
-    $fh->close();
-
-    return 1;
+        my $self = shift;
+        my $time = shift;
+        
+        my $path = $self->_path_update();
+        my $fh   = IO::AtomicFile->open($path,"w");
+        
+        if (! $fh) {
+                $self->logger()->error("unable to open '$path' for writing, $!");
+                return 0;
+        }
+        
+        $fh->print($time);
+        $fh->close();
+        
+        return 1;
 }
 
 sub _is_updated {
-    my $self = shift;
-
-    my $last    = $self->_read_update();
-    my $current = $self->update();
-
-    $self->_write_update($current);
-
-    return ($last) ? (str2time($current) > str2time($last)) : 1;
+        my $self = shift;
+        
+        my $last    = $self->_read_update();
+        my $current = $self->update();
+        
+        $self->_write_update($current);
+        
+        return ($last) ? (str2time($current) > str2time($last)) : 1;
 }
 
 sub _path_update {
-    my $self = shift;
-    
-    my $root = undef;
-    my $file = sprintf(".del.icio.us.%s",$self->{'__user'});;
-
-    if (exists($self->{'__updates'})) {
-	$root = $self->{'__updates'};
-    }
-    
-    elsif (-d (getpwuid($EUID))[7]) {
-	$root = (getpwuid($EUID))[7];
-    }
-
-
-    else {
-	$root = File::Temp::tempdir();
-	$self->{'__updates'} = $root;
-    }
-
-    return File::Spec->catfile($root,$file);
+        my $self = shift;
+        
+        my $root = undef;
+        my $file = sprintf(".del.icio.us.%s",$self->{'__user'});;
+        
+        if (exists($self->{'__updates'})) {
+                $root = $self->{'__updates'};
+        }
+        
+        elsif (-d (getpwuid($EUID))[7]) {
+                $root = (getpwuid($EUID))[7];
+        }
+        
+        
+        else {
+                $root = File::Temp::tempdir();
+                $self->{'__updates'} = $root;
+        }
+        
+        return File::Spec->catfile($root,$file);
 }
 
 sub _buildrequest {
-    my $self   = shift;
-    my $meth   = shift;
-    my $args   = shift;
-
-    # @params are assumed to anything
-    # that's left in @_
-
-    my $uri = join("/",URI_API,$meth);
-
-    my $get = &_getargs($args,@_);
-    my $req = HTTP::Request->new(GET=>&_buildurl($uri,$get));
-
-    $self->_authorize($req);
-
-    $self->logger()->debug($req->as_string());
-    return $req;
+        my $self   = shift;
+        my $meth   = shift;
+        my $args   = shift;
+        
+        # @params are assumed to anything
+        # that's left in @_
+        
+        my $uri = join("/",URI_API,$meth);
+        
+        my $get = &_getargs($args,@_);
+        my $req = HTTP::Request->new(GET=>&_buildurl($uri,$get));
+        
+        $self->_authorize($req);
+        
+        $self->logger()->debug($req->as_string());
+        return $req;
 }
 
 sub _sendrequest {
-    my $self = shift;
-    my $req  = shift;
+        my $self = shift;
+        my $req  = shift;
+        
+        # check to see if we need to take
+        # breather (are we pounding or are
+        # we not?)
+        
+        while (time < $self->{'__wait'}) {
+                
+                my $debug_msg = sprintf("trying not to beat up on service, pause for %.2f seconds\n",
+                                        PAUSE_SECONDS_OK);
+                
+                $self->logger()->debug($debug_msg);
+                sleep(PAUSE_SECONDS_OK);
+        }
+        
+        # send request
+        
+        my $res = $self->_ua()->request($req);
+        $self->logger()->debug($res->as_string());
+        
+        # check for 503 status
+        
+        if ($res->code() eq PAUSE_ONSTATUS) {
+                
+                # you are in a dark and twisty corridor
+                # where all the errors look the same - 
+                # just give up if we hit this ceiling
+                
+                $self->{'__paused'} ++;
+                
+                if ($self->{'__paused'} > PAUSE_MAXTRIES) {
+                        
+                        my $errmsg = sprintf("service returned '%d' status %d times; exiting",
+                                             PAUSE_ONSTATUS,PAUSE_MAXTRIES);
+                        
+                        $self->logger()->error($errmsg);
+                        return undef;
+                }
 
-    # check to see if we need to take
-    # breather (are we pounding or are
-    # we not?)
-
-    while (time < $self->{'__wait'}) {
-
-	my $debug_msg = sprintf("trying not to beat up on service, pause for %.2f seconds\n",
-				PAUSE_SECONDS_OK);
-
-	$self->logger()->debug($debug_msg);
-	sleep(PAUSE_SECONDS_OK);
-    }
-
-    # send request
-
-    my $res = $self->_ua()->request($req);
-    $self->logger()->debug($res->as_string());
-
-    # check for 503 status
-
-    if ($res->code() eq PAUSE_ONSTATUS) {
-
-	# you are in a dark and twisty corridor
-	# where all the errors look the same - 
-	# just give up if we hit this ceiling
-
-	$self->{'__paused'} ++;
-
-	if ($self->{'__paused'} > PAUSE_MAXTRIES) {
-
-	    my $errmsg = sprintf("service returned '%d' status %d times; exiting",
-				 PAUSE_ONSTATUS,PAUSE_MAXTRIES);
-	    
-	    $self->logger()->error($errmsg);
-	    return undef;
-	}
-
-	# check to see if the del.icio.us server
-	# requests that we hold off for a set amount
-	# of time - otherwise wait a little longer
-	# than the last time
-
-	my $retry_after = $res->header("Retry-After");
-	my $debug_msg   = undef;
-
-	if ($retry_after ) {
-	    $debug_msg = sprintf("service unavailable, requested to retry in %d seconds",
-				 $retry_after);
-	} 
-
-	else {
-	    $retry_after = PAUSE_SECONDS_UNAVAILABLE * $self->{'__paused'};
-	    $debug_msg = sprintf("service unavailable, pause for %.2f seconds",
-				 $retry_after);
-	}
-
-	$self->logger()->debug($debug_msg);
-	sleep($retry_after);
-
-	# try, try again
-
-	return $self->_sendrequest($req);
-    }
-
-    # (re) set internal timers
-
-    $self->{'__wait'}   = time + PAUSE_SECONDS_OK;
-    $self->{'__paused'} = 0;
-
-    # check for any other HTTP 
-    # errors
-
-    if ($res->code() ne 200) {
-	$self->logger()->error(join(":",$res->code(),$res->message()));
-	return undef;
-    }
-
-    if ($res->content() =~ /^<html/) {
-	$self->logger()->error("erp. returned HTML - this is wrong");
-	return undef;
-    }
-
-    # munge munge munge
-
-    my $xml = undef;
-
-    eval { 
-	$xml = XMLin($res->content());
-    };
-
-    $self->logger()->debug(Dump($xml));
-
-    if ($@) {
-	$self->logger()->error($@);
-	return undef;
-    }
-
-    if ($xml eq RESPONSE_ERROR) {
-	$self->logger()->error($xml);
-	return undef;
-    }
-
-    $self->logger()->debug($xml);
-    return $xml;
+                # check to see if the del.icio.us server
+                # requests that we hold off for a set amount
+                # of time - otherwise wait a little longer
+                # than the last time
+                
+                my $retry_after = $res->header("Retry-After");
+                my $debug_msg   = undef;
+                
+                if ($retry_after ) {
+                        $debug_msg = sprintf("service unavailable, requested to retry in %d seconds",
+                                             $retry_after);
+                } 
+                
+                else {
+                        $retry_after = PAUSE_SECONDS_UNAVAILABLE * $self->{'__paused'};
+                        $debug_msg = sprintf("service unavailable, pause for %.2f seconds",
+                                             $retry_after);
+                }
+                
+                $self->logger()->debug($debug_msg);
+                sleep($retry_after);
+                
+                # try, try again
+                
+                return $self->_sendrequest($req);
+        }
+        
+        # (re) set internal timers
+        
+        $self->{'__wait'}   = time + PAUSE_SECONDS_OK;
+        $self->{'__paused'} = 0;
+        
+        # check for any other HTTP 
+        # errors
+        
+        if ($res->code() ne 200) {
+                $self->logger()->error(join(":",$res->code(),$res->message()));
+                return undef;
+        }
+        
+        if ($res->content() =~ /^<html/) {
+                $self->logger()->error("erp. returned HTML - this is wrong");
+                return undef;
+        }
+        
+        # munge munge munge
+        
+        my $xml = undef;
+        
+        eval { 
+                $xml = XMLin($res->content());
+        };
+        
+        $self->logger()->debug(Dumper($xml));
+        
+        if ($@) {
+                $self->logger()->error($@);
+                return undef;
+        }
+        
+        if ($xml eq RESPONSE_ERROR) {
+                $self->logger()->error($xml);
+                return undef;
+        }
+        
+        return $xml;
 }
 
 sub _authorize {
-    my $self = shift;
-    my $req  = shift;
-    $req->authorization_basic($self->{'__user'},$self->{'__pswd'});
+        my $self = shift;
+        my $req  = shift;
+        $req->authorization_basic($self->{'__user'},$self->{'__pswd'});
 }
 
 sub _ua {
-    my $self = shift;
-
-    if (ref($self->{'__ua'}) ne "LWP::UserAgent") {
-	my $ua = LWP::UserAgent->new();
-	$ua->agent(sprintf("%s, %s",__PACKAGE__,$Net::Delicious::VERSION));
-
-	$self->{'__ua'} = $ua;
-    }
-
-    return $self->{'__ua'};
+        my $self = shift;
+        
+        if (ref($self->{'__ua'}) ne "LWP::UserAgent") {
+                my $ua = LWP::UserAgent->new();
+                $ua->agent(sprintf("%s, %s",__PACKAGE__,$Net::Delicious::VERSION));
+                
+                $self->{'__ua'} = $ua;
+        }
+        
+        return $self->{'__ua'};
 }
 
 sub _getargs {
-    my $args = shift;
-
-    my @get = map { 
-	"$_=$args->{$_}";
-    } grep {
-	exists($args->{$_}) && $args->{$_}
-    } @_;
-
-    return \@get;
+        my $args = shift;
+        
+        my @get = map { 
+                "$_=$args->{$_}";
+        } grep {
+                exists($args->{$_}) && $args->{$_}
+        } @_;
+        
+        return \@get;
 }
 
 sub _buildurl {
-    my $url  = shift;
-    my $args = shift;
-
-    if (ref($args) ne "ARRAY") {
-	return $url;
-    }
-
-    elsif (! scalar(@$args)) {
-	return $url;
-    }
-
-    else {
-	return join("?",$url,join("&",@$args));
-    }
+        my $url  = shift;
+        my $args = shift;
+        
+        if (ref($args) ne "ARRAY") {
+                return $url;
+        }
+        
+        elsif (! scalar(@$args)) {
+                return $url;
+        }
+        
+        else {
+                return join("?",$url,join("&",@$args));
+        }
 }
 
 sub _getresults {
-    my $self = shift;
-    my $data = shift;
-    my $key  = shift;
-
-    if (! exists($data->{$key})) {
-	return [];
-    }
-
-    elsif (ref($data->{ $key }) eq "ARRAY") {
-	return $data->{ $key };
-    }
-
-    else {
-	return [ $data->{ $key } ];
-    }
+        my $self = shift;
+        my $data = shift;
+        my $key  = shift;
+        
+        if (! exists($data->{$key})) {
+                return [];
+        }
+        
+        elsif (ref($data->{ $key }) eq "ARRAY") {
+                return $data->{ $key };
+        }
+        
+        else {
+                return [ $data->{ $key } ];
+        }
 }
 
 sub _buildresults {
-    my $self    = shift;
-    my $type    = shift;
-    my $results = shift;
-
-    $type =~ s/:://g;
-
-    my $fclass = join("::",__PACKAGE__,$type);
-    eval "require $fclass";
-
-    if ($@) {
-	$self->logger()->error($@);
-	return undef;
-    }
-
-    if (wantarray) {
-	return map { 
-	    $fclass->new($_);
-	} @$results;
-    }
-
-    #
-
-    require Net::Delicious::Iterator;
-    return Net::Delicious::Iterator->new($fclass,
-					 $results);    
+        my $self    = shift;
+        my $type    = shift;
+        my $results = shift;
+        
+        $type =~ s/:://g;
+        
+        my $fclass = join("::",__PACKAGE__,$type);
+        eval "require $fclass";
+        
+        if ($@) {
+                $self->logger()->error($@);
+                return undef;
+        }
+        
+        if (wantarray) {
+                return map { 
+                        $fclass->new($_);
+                } @$results;
+        }
+        
+        #
+        
+        require Net::Delicious::Iterator;
+        return Net::Delicious::Iterator->new($fclass,
+                                             $results);    
 }
 
 sub _isdone {
-    my $self = shift;
-    my $res  = shift;
-
-    if (! $res) {
-	return 0;
-    }
-
-    elsif ($res eq RESPONSE_DONE) {
-	return 1;
-    }
-
-    elsif ($res eq RESPONSE_OK) {
-	return 1;
-    }
-
-    elsif ((ref($res) eq "HASH") &&
-	(exists($res->{code})) &&
-	($res->{code} eq RESPONSE_DONE)) {
-
-	return 1;
-    }
-
-    else {
-	$self->logger()->error("Unknown data structure returned.");
-	return 0;
-    }
+        my $self = shift;
+        my $res  = shift;
+        
+        if (! $res) {
+                return 0;
+        }
+        
+        elsif ($res eq RESPONSE_DONE) {
+                return 1;
+        }
+        
+        elsif ($res eq RESPONSE_OK) {
+                return 1;
+        }
+        
+        elsif ((ref($res) eq "HASH") &&
+               (exists($res->{code})) &&
+               ($res->{code} eq RESPONSE_DONE)) {
+                
+                return 1;
+        }
+        
+        else {
+                $self->logger()->error("Unknown data structure returned.");
+                return 0;
+        }
 }
 
 =head1 ERRORS
@@ -1166,11 +1182,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.93
+0.94
 
 =head1 DATE 
 
-$Date: 2005/04/06 04:58:22 $
+$Date: 2005/12/20 06:46:41 $
 
 =head1 AUTHOR
 
@@ -1198,3 +1214,5 @@ same terms as Perl itself.
 =cut
 
 return 1;
+
+__END__

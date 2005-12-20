@@ -6,9 +6,26 @@
 @prefix asc:     <http://aaronland.info/ns/changefile/> .
                                      
 <>
-        dc:identifier           "$Id: Changes,v 1.22 2005/12/11 18:41:57 asc Exp $" ;
+        dc:identifier           "$Id: Changes,v 1.24 2005/12/18 18:17:45 asc Exp $" ;
         dc:description          "Changes for Net::Delicious.pm" ;
         dcterms:references      <http://aaronland.info/perl/net/delicious/> .
+
+<http://aaronland.info/perl/net/delicious/Net-Delicious-0.94.tar.gz>
+        dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;
+        dcterms:replaces    <http://aaronland.info/perl/net/delicious/Net-Delicious-0.93.tar.gz> ;
+
+        doap:Version    [
+                        doap:revision     "0.94" ;
+                        doap:created      "2005-12-13" ;
+                        ];
+        asc:changes     [
+                        asc:addition      "Added Net::Delicious 'all_posts_for_url' helper method." ;
+                        asc:addition      "Added 'as_hashref' method for safely serializing (and re-blessing) objects. Added Net::Delicious::Object base class." ;
+                        asc:update        "All the inbox related methods now return an error as they are no longer part of the del.cio.us API. Eventually they will be removed from the package altogether." ;
+                        asc:update        "Updated 'posts'method to accept 'url' parameter." ;
+                        asc:update        "Updated VERSION numbers for all Net::Delicious::* packages to match Net::Delicious.pm" ;
+                        asc:update        "Updated t/01-load.t to load all packages." ;
+                        ] .
 
 <http://aaronland.info/perl/net/delicious/Net-Delicious-0.93.tar.gz>
         dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;

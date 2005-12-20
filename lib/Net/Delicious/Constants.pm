@@ -1,7 +1,9 @@
-package Net::Delicious::Constants;
+# $Id: Constants.pm,v 1.5 2005/12/17 19:04:14 asc Exp $
 use strict;
 
-# $Id: Constants.pm,v 1.4 2005/04/05 15:56:50 asc Exp $
+package Net::Delicious::Constants;
+
+$Net::Delicious::Constants::VERSION = '0.94';
 
 =head1 NAME
 
@@ -20,8 +22,6 @@ Net::Delicious::Constants - del.icio.us constant variables
 Import del.icio.us constant variables
 
 =cut
-
-$Net::Delicious::Constants::VERSION = '0.1';
 
 sub import {
     my $self = shift;
@@ -74,11 +74,11 @@ sub import {
 
 =head1 VERSION
 
-0.1
+0.94
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/17 19:04:14 $
 
 =head1 AUTHOR
 

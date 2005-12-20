@@ -1,7 +1,10 @@
-package Net::Delicious::Date;
+# $Id: Date.pm,v 1.6 2005/12/17 19:04:14 asc Exp $
 use strict;
 
-# $Id: Date.pm,v 1.5 2005/04/05 15:56:50 asc Exp $
+package Net::Delicious::Date;
+use base qw (Net::Delicious::Object);
+
+$Net::Delicious::Date::VERSION = '0.94';
 
 =head1 NAME
 
@@ -41,8 +44,6 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Date::VERSION = '0.1';
-
 use overload q("") => sub { shift->count() };
 
 =head1 PACKAGE METHODS
@@ -55,16 +56,7 @@ Returns a I<Net::Delicious::Date> object. Woot!
 
 =cut
 
-sub new {
-    my $pkg  = shift;
-    my $args = shift;
-    
-    my %self = map {
-	$_ => $args->{ $_ }
-    } qw ( tag date count user );
-
-    return bless \%self, $pkg;
-}
+# Defined in Net::Delicious::Object
 
 =head1 OBJECT METHODS
 
@@ -103,13 +95,26 @@ sub count {
     return $self->{count};
 }
 
+=head2 $obj->as_hashref()
+
+Return the object as a hash ref safe for serializing and re-blessing.
+
+=cut
+
+# Defined in Net::Delicious::Object
+
+sub _properties {
+        my $pkg = shift;
+        return qw (tag date count user);
+}
+
 =head1 VERSION
 
-0.1
+0.94
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/17 19:04:14 $
 
 =head1 AUTHOR
 

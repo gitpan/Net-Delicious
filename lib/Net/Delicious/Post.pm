@@ -1,7 +1,11 @@
-package Net::Delicious::Post;
+
+# $Id: Post.pm,v 1.13 2005/12/17 19:04:14 asc Exp $
 use strict;
 
-# $Id: Post.pm,v 1.12 2005/04/05 15:56:50 asc Exp $
+package Net::Delicious::Post;
+use base qw (Net::Delicious::Object);
+
+$Net::Delicious::Post::VERSION = '0.94';
 
 =head1 NAME
 
@@ -41,8 +45,6 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Post::VERSION = '0.5';
-
 use Net::Delicious::User;
 use overload q("") => sub { shift->href() };
 
@@ -60,23 +62,17 @@ sub new {
     my $pkg  = shift;
     my $args = shift;
     
-    my %self = map { 
-	$_ => $args->{ $_ };
-    } qw ( description extended href time parent);
+    my $self = $pkg->SUPER::new($args);
 
     # this one seems to be the source of some
     # confusion - unclear whether it's me or
     # inconsistency in the API itself
 
-    $self{ tags } = $args->{ tags } || $args->{ tag };
+    $self->{tags} ||= $args->{ tag };
 
-    #
+    $self->{user} = Net::Delicious::User->new({name => $args->{user}});
 
-    $self{ user } = Net::Delicious::User->new({name => $args->{user}});
-
-    #
-
-    return bless \%self, $pkg;
+    return $self;
 }
 
 =head1 OBJECT METHODS
@@ -162,13 +158,33 @@ sub time {
     return $self->{time};
 }
 
+=head2 $obj->as_hashref()
+
+Return the object as a hash ref safe for serializing and re-blessing.
+
+=cut
+
+sub as_hashref {
+        my $self = shift;
+
+        my $data      = $self->SUPER::as_hashref();
+        $data->{user} = $self->user()->name();
+
+        return $data;
+}
+
+sub _properties {
+        my $pkg = shift;
+        return qw (description extended href time parent tags);
+}
+
 =head1 VERSION
 
-0.5
+0.94
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/17 19:04:14 $
 
 =head1 AUTHOR
 

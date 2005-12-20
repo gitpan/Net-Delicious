@@ -1,7 +1,10 @@
-package Net::Delicious::Tag;
+# $Id: Tag.pm,v 1.9 2005/12/18 16:48:58 asc Exp $
 use strict;
 
-# $Id: Tag.pm,v 1.7 2005/04/05 15:56:50 asc Exp $
+package Net::Delicious::Tag;
+use base qw (Net::Delicious::Object);
+
+$Net::Delicious::Tag::VERSION = '0.94';
 
 =head1 NAME
 
@@ -41,8 +44,6 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Tag::VERSION = '0.2';
-
 use overload q("") => sub { shift->tag() };
 
 =head1 PACKAGE METHODS
@@ -55,16 +56,7 @@ Returns a I<Net::Delicious::Tag> object. Woot!
 
 =cut
 
-sub new {
-    my $pkg  = shift;
-    my $args = shift;
-
-    my %self = map {
-	$_ => $args->{ $_ }
-    } qw ( tag count );
-
-    return bless \%self, $pkg; 
-}
+# Defined in Net::Delicious::Object
 
 =head1 OBJECT METHODS
 
@@ -92,13 +84,26 @@ sub tag {
     return $self->{tag};
 }
 
+=head2 $obj->as_hashref()
+
+Return the object as a hash ref safe for serializing and re-blessing.
+
+=cut
+
+# Defined in Net::Delicious::Object
+
+sub _properties {
+        my $pkg = shift;
+        return qw ( tag count );
+}
+
 =head1 VERSION
 
-0.2
+0.94
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/18 16:48:58 $
 
 =head1 AUTHOR
 

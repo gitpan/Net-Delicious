@@ -1,7 +1,10 @@
-package Net::Delicious::Subscription;
+# $Id: Subscription.pm,v 1.6 2005/12/17 19:04:14 asc Exp $
 use strict;
 
-# $Id: Subscription.pm,v 1.5 2005/04/05 15:56:50 asc Exp $
+package Net::Delicious::Subscription;
+use base qw (Net::Delicious::Object);
+
+$Net::Delicious::Subscription::VERSION = '0.94';
 
 =head1 NAME
 
@@ -41,8 +44,6 @@ objects outside of I<Net::Delicious> itself.
 
 =cut
 
-$Net::Delicious::Subscription::VERSION = '0.1';
-
 use overload q("") => sub { shift->user() };
 
 use Net::Delicious::Constants qw (:uri);
@@ -57,16 +58,7 @@ Returns a new I<Net::Delicious::Subscription> object. Woot!
 
 =cut
 
-sub new {
-    my $pkg  = shift;
-    my $args = shift;
-    
-    my %self = map { 
-	$_ => $args->{ $_ };
-    } qw ( user tag );
-
-    return bless \%self, $pkg;
-}
+# Defined in Net::Delicious::Object
 
 =head1 OBJECT METHODS
 
@@ -105,13 +97,26 @@ sub url {
     return join("/",URI_DELICIOUS,$self->user(),$self->tag());
 }
 
+=head2 $obj->as_hashref()
+
+Return the object as a hash ref safe for serializing and re-blessing.
+
+=cut
+
+# Defined in Net::Delicious::Object
+
+sub _properties {
+        my $pkg = shift;
+        return qw ( user tag );
+}
+
 =head1 VERSION
 
-0.1
+0.94
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/17 19:04:14 $
 
 =head1 AUTHOR
 

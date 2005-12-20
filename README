@@ -16,8 +16,14 @@ DESCRIPTION
     OOP for the del.icio.us API
 
 PACKAGE METHODS
-  __PACKAGE__->new(\%args)
-    Valid arguments are :
+  __PACKAGE__->new(\%args || Config::Simple)
+    Arguments to the Net::Delicious object may be defined in one of three
+    ways : As a single hash reference or; As a reference to a
+    *Config::Simple* object; as a path to a file that may be read by the
+    *Config::Simple*.
+
+    The first option isn't going away any time soon but should be considered
+    as deprecated. Valid hash reference arguments are :
 
     * user
         String. *required*
@@ -45,7 +51,37 @@ PACKAGE METHODS
         Add a *Log::Dispatch::Screen* dispatcher to log debug (and higher)
         notices. Notices will be printed to STDERR.
 
-    Returns a Net::Delicious object. Woot!
+    *Config::Simple* options are expected to be grouped in a "block" labeled
+    delicious. Valid options are :
+
+    * user
+        String. *required*
+
+        Your del.icio.us username.
+
+    * pswd
+        String. *required*
+
+        Your del.icio.us password.
+
+    * updates
+        String.
+
+        The path to a directory where the timestamp for the last update to
+        your bookmarks can be recorded. This is used by the *all_posts*
+        method to prevent abusive requests.
+
+        Default is the current user's home directory, followed by a
+        temporary directory as determined by File::Temp.
+
+    * debug
+        Boolean.
+
+        Add a *Log::Dispatch::Screen* dispatcher to log debug (and higher)
+        notices. Notices will be printed to STDERR.
+
+    Returns a Net::Delicious object or undef if there was a problem creating
+    the object.
 
 OBJECT METHODS
   $obj->add_post(\%args)
@@ -137,6 +173,23 @@ OBJECT METHODS
     If no posts have been added between calls to this method, it will return
     an empty list (or undef if called in a scalar context.)
 
+  $obj->all_posts_for_tag(\%args)
+    This is a just a helper method which hides a bunch of API calls behind a
+    single method.
+
+    Valid arguments are :
+
+    * tag
+        String. *required*
+
+        The tag you want to retrieve posts for.
+
+    Returns a list of *Net::Delicious::Post* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
   $obj->update()
     Returns return the time of the last update formatted as a W3CDTF string.
 
@@ -215,72 +268,24 @@ OBJECT METHODS
     Returns true or false
 
   $obj->inbox_for_date(\%args)
-    Get a list of inbox entries.
-
-    Valid arguments are :
-
-    * dt
-        String.
-
-        Filter by this date
-
-    Returns a list of *Net::Delicious::Post* objects when called in an array
-    context.
-
-    Returns a *Net::Delicious::Iterator* object when called in a scalar
-    context.
+    This method is no longer part of the del.icio.us API. It will be removed
+    from Net::Delicious in a subsequent release.
 
   $obj->inbox_dates()
-    Get a list of dates containing inbox entries.
-
-    Returns a list of *Net::Delicious::Date* objects when called in an array
-    context.
-
-    Returns a *Net::Delicious::Iterator* object when called in a scalar
-    context.
-
-    *This may be updated to return a Net::Delicious::Inbox object.*
+    This method is no longer part of the del.icio.us API. It will be removed
+    from Net::Delicious in a subsequent release.
 
   $obj->inbox_subscriptions()
-    Get a list of your subscriptions.
-
-    Returns a list of *Net::Delicious::Subscription* objects when called in
-    an array context.
-
-    Returns a *Net::Delicious::Iterator* object when called in a scalar
-    context.
+    This method is no longer part of the del.icio.us API. It will be removed
+    from Net::Delicious in a subsequent release.
 
   $obj->add_inbox_subscription(\%args)
-    Adds a subscription.
-
-    Valid arguments are :
-
-    * user
-        String. *required*
-
-        Username.
-
-    * tag
-        String.
-
-        Tag - leave blank for all posts
-
-    Returns true or false.
+    This method is no longer part of the del.icio.us API. It will be removed
+    from Net::Delicious in a subsequent release.
 
   $obj->remove_inbox_subscription(\%args)
-    Valid arguments are :
-
-    * user
-        String. *required*
-
-        Username.
-
-    * tag
-        String.
-
-        Tag - leave blank for all posts
-
-    Returns true or false.
+    This method is no longer part of the del.icio.us API. It will be removed
+    from Net::Delicious in a subsequent release.
 
   $obj->logger()
     Returns a Log::Dispatch object.
@@ -291,10 +296,10 @@ ERRORS
     to provide it with a dispatcher.
 
 VERSION
-    0.93
+    0.94
 
 DATE
-    $Date: 2005/04/06 04:58:22 $
+    $Date: 2005/12/20 06:46:41 $
 
 AUTHOR
     Aaron Straup Cope <ascope@cpan.org>
