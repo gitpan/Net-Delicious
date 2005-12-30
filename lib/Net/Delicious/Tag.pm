@@ -1,10 +1,10 @@
-# $Id: Tag.pm,v 1.9 2005/12/18 16:48:58 asc Exp $
+# $Id: Tag.pm,v 1.11 2005/12/30 17:51:40 asc Exp $
 use strict;
 
 package Net::Delicious::Tag;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Tag::VERSION = '0.94';
+$Net::Delicious::Tag::VERSION = '0.95';
 
 =head1 NAME
 
@@ -99,11 +99,11 @@ sub _properties {
 
 =head1 VERSION
 
-0.94
+0.95
 
 =head1 DATE
 
-$Date: 2005/12/18 16:48:58 $
+$Date: 2005/12/30 17:51:40 $
 
 =head1 AUTHOR
 

@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Pause;
 use strict;
 
-# $Id: Pause.pm,v 1.5 2005/04/05 15:56:50 asc Exp $
+# $Id: Pause.pm,v 1.7 2005/12/30 17:51:40 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us
 
 =cut
 
-$Net::Delicious::Constants::Pause::VERSION = '0.1';
+$Net::Delicious::Constants::Pause::VERSION = '0.95';
 
 =head1 CONSTANTS
 
@@ -66,11 +66,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.1
+0.95
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/30 17:51:40 $
 
 =head1 AUTHOR
 

@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.35 2005/12/20 06:46:41 asc Exp $
+# $Id: Delicious.pm,v 1.39 2005/12/30 17:51:39 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '0.94';
+$Net::Delicious::VERSION = '0.95';
 
 =head1 NAME
 
@@ -857,7 +857,12 @@ sub _read_update {
         my $self = shift;
         
         my $path = $self->_path_update();
-        my $fh   = FileHandle->new($path);
+
+        if (! -f $path) {
+                return time();
+        }
+
+        my $fh = FileHandle->new($path);
         
         if (! $fh) {
                 $self->logger()->error("unable to open '$path' for reading, $!");
@@ -906,7 +911,7 @@ sub _path_update {
         my $root = undef;
         my $file = sprintf(".del.icio.us.%s",$self->{'__user'});;
         
-        if (exists($self->{'__updates'})) {
+        if ((exists($self->{'__updates'})) && (-d $self->{'__updated'})) {
                 $root = $self->{'__updates'};
         }
         
@@ -1027,7 +1032,7 @@ sub _sendrequest {
                 $self->logger()->error("erp. returned HTML - this is wrong");
                 return undef;
         }
-        
+
         # munge munge munge
         
         my $xml = undef;
@@ -1182,11 +1187,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.94
+0.95
 
 =head1 DATE 
 
-$Date: 2005/12/20 06:46:41 $
+$Date: 2005/12/30 17:51:39 $
 
 =head1 AUTHOR
 

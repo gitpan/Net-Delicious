@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Uri;
 use strict;
 
-# $Id: Uri.pm,v 1.4 2005/04/05 15:56:50 asc Exp $
+# $Id: Uri.pm,v 1.6 2005/12/30 17:51:40 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us URIs.
 
 =cut
 
-$Net::Delicious::Constants::Uri::VERSION = '0.1';
+$Net::Delicious::Constants::Uri::VERSION = '0.95';
 
 =head1 CONSTANTS
 
@@ -48,11 +48,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.1
+0.95
 
 =head1 DATE
 
-$Date: 2005/04/05 15:56:50 $
+$Date: 2005/12/30 17:51:40 $
 
 =head1 AUTHOR
 

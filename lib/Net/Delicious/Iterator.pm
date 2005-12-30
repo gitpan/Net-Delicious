@@ -1,9 +1,9 @@
-# $Id: Iterator.pm,v 1.5 2005/12/17 19:04:14 asc Exp $
+# $Id: Iterator.pm,v 1.7 2005/12/30 17:51:39 asc Exp $
 use strict;
 
 package Net::Delicious::Iterator;
 
-$Net::Delicious::Iterator::VERSION = '0.94';
+$Net::Delicious::Iterator::VERSION = '0.95';
 
 =head1 NAME
 
@@ -79,11 +79,11 @@ sub reset {
 
 =head1 VERSION
 
-0.94
+0.95
 
 =head1 DATE
 
-$Date: 2005/12/17 19:04:14 $
+$Date: 2005/12/30 17:51:39 $
 
 =head1 AUTHOR
 
