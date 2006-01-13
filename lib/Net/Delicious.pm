@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.39 2005/12/30 17:51:39 asc Exp $
+# $Id: Delicious.pm,v 1.40 2006/01/13 17:09:11 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '0.95';
+$Net::Delicious::VERSION = '0.96';
 
 =head1 NAME
 
@@ -31,6 +31,7 @@ use Net::Delicious::Constants qw (:api :pause :response :uri);
 
 use HTTP::Request;
 use LWP::UserAgent;
+use URI;
 
 use XML::Simple;
 
@@ -935,14 +936,21 @@ sub _buildrequest {
         
         # @params are assumed to anything
         # that's left in @_
-        
-        my $uri = join("/",URI_API,$meth);
-        
-        my $get = &_getargs($args,@_);
-        my $req = HTTP::Request->new(GET=>&_buildurl($uri,$get));
-        
+
+        my %query = map {
+                $_ => $args->{$_}
+        } grep {
+                exists($args->{$_}) && $args->{$_}
+        } @_;
+
+        my $uri = URI->new_abs($meth, URI_API);
+        $uri->query_form(%query);
+
+        my $req = HTTP::Request->new(GET => $uri);
         $self->_authorize($req);
-        
+
+        #
+
         $self->logger()->debug($req->as_string());
         return $req;
 }
@@ -1075,35 +1083,6 @@ sub _ua {
         return $self->{'__ua'};
 }
 
-sub _getargs {
-        my $args = shift;
-        
-        my @get = map { 
-                "$_=$args->{$_}";
-        } grep {
-                exists($args->{$_}) && $args->{$_}
-        } @_;
-        
-        return \@get;
-}
-
-sub _buildurl {
-        my $url  = shift;
-        my $args = shift;
-        
-        if (ref($args) ne "ARRAY") {
-                return $url;
-        }
-        
-        elsif (! scalar(@$args)) {
-                return $url;
-        }
-        
-        else {
-                return join("?",$url,join("&",@$args));
-        }
-}
-
 sub _getresults {
         my $self = shift;
         my $data = shift;
@@ -1187,11 +1166,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.95
+0.96
 
 =head1 DATE 
 
-$Date: 2005/12/30 17:51:39 $
+$Date: 2006/01/13 17:09:11 $
 
 =head1 AUTHOR
 
@@ -1211,7 +1190,7 @@ This package implements the API in its entirety as of I<DATE>.
 
 =head1 LICENSE
 
-Copyright (c) 2004-2005, Aaron Straup Cope. All Rights Reserved.
+Copyright (c) 2004-2006, Aaron Straup Cope. All Rights Reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

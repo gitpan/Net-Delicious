@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Api;
 use strict;
 
-# $Id: Api.pm,v 1.11 2005/12/30 17:51:40 asc Exp $
+# $Id: Api.pm,v 1.12 2006/01/13 17:09:11 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us API calls.
 
 =cut
 
-$Net::Delicious::Constants::Api::VERSION = '0.95';
+$Net::Delicious::Constants::Api::VERSION = '0.96';
 
 use constant LOCAL_API_POSTS   => "posts";
 use constant LOCAL_API_TAGS    => "tags";
@@ -162,11 +162,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.95
+0.96
 
 =head1 DATE
 
-$Date: 2005/12/30 17:51:40 $
+$Date: 2006/01/13 17:09:11 $
 
 =head1 AUTHOR
 
@@ -180,7 +180,7 @@ L<Net::Delicious::Constants>
 
 =head1 LICENSE
 
-Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2006 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

@@ -296,10 +296,10 @@ ERRORS
     to provide it with a dispatcher.
 
 VERSION
-    0.95
+    0.96
 
 DATE
-    $Date: 2005/12/30 17:51:39 $
+    $Date: 2006/01/13 17:09:11 $
 
 AUTHOR
     Aaron Straup Cope <ascope@cpan.org>
@@ -314,7 +314,7 @@ NOTES
     This package implements the API in its entirety as of *DATE*.
 
 LICENSE
-    Copyright (c) 2004-2005, Aaron Straup Cope. All Rights Reserved.
+    Copyright (c) 2004-2006, Aaron Straup Cope. All Rights Reserved.
 
     This is free software, you may use it and distribute it under the same
     terms as Perl itself.

@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Pause;
 use strict;
 
-# $Id: Pause.pm,v 1.7 2005/12/30 17:51:40 asc Exp $
+# $Id: Pause.pm,v 1.8 2006/01/13 17:09:11 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us
 
 =cut
 
-$Net::Delicious::Constants::Pause::VERSION = '0.95';
+$Net::Delicious::Constants::Pause::VERSION = '0.96';
 
 =head1 CONSTANTS
 
@@ -66,11 +66,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.95
+0.96
 
 =head1 DATE
 
-$Date: 2005/12/30 17:51:40 $
+$Date: 2006/01/13 17:09:11 $
 
 =head1 AUTHOR
 
@@ -84,7 +84,7 @@ L<Net::Delicious::Constants>
 
 =head1 LICENSE
 
-Copyright (c) 2004-2005 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2006 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.
