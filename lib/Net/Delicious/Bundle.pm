@@ -1,10 +1,10 @@
-# $Id: Bundle.pm,v 1.8 2006/01/13 17:09:11 asc Exp $
+# $Id: Bundle.pm,v 1.9 2006/06/07 02:42:36 asc Exp $
 use strict;
 
 package Net::Delicious::Bundle;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Bundle::VERSION = '0.96';
+$Net::Delicious::Bundle::VERSION = '0.99';
 
 use overload q("") => sub { shift->name(); };
 
@@ -105,11 +105,11 @@ sub _properties {
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/07 02:42:36 $
 
 =head1 AUTHOR
 

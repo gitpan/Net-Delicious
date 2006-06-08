@@ -1,10 +1,10 @@
-# $Id: Date.pm,v 1.9 2006/01/13 17:09:11 asc Exp $
+# $Id: Date.pm,v 1.10 2006/06/07 02:42:36 asc Exp $
 use strict;
 
 package Net::Delicious::Date;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Date::VERSION = '0.96';
+$Net::Delicious::Date::VERSION = '0.99';
 
 =head1 NAME
 
@@ -110,11 +110,11 @@ sub _properties {
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/07 02:42:36 $
 
 =head1 AUTHOR
 

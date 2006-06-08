@@ -6,9 +6,23 @@
 @prefix asc:     <http://aaronland.info/ns/changefile/> .
                                      
 <>
-        dc:identifier           "$Id: Changes,v 1.27 2006/01/13 17:09:11 asc Exp $" ;
+        dc:identifier           "$Id: Changes,v 1.29 2006/06/08 14:19:46 asc Exp $" ;
         dc:description          "Changes for Net::Delicious.pm" ;
         dcterms:references      <http://aaronland.info/perl/net/delicious/> .
+
+<http://aaronland.info/perl/net/delicious/Net-Delicious-0.99.tar.gz>
+        dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;
+        dcterms:replaces    <http://aaronland.info/perl/net/delicious/Net-Delicious-0.96.tar.gz> ;
+
+        doap:Version    [
+                        doap:revision     "0.99" ;
+                        doap:created      "2006-06-05" ;
+                        ];
+        asc:changes     [
+                        asc:update        "Use 'v1' endpoint" ;
+                        asc:addition      "Added code/methods to account for private bookmarks" ;
+                        asc:update        "Updated POD" ;
+                        ] .
 
 <http://aaronland.info/perl/net/delicious/Net-Delicious-0.96.tar.gz>
         dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;

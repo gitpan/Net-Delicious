@@ -1,11 +1,10 @@
-
-# $Id: Post.pm,v 1.16 2006/01/13 17:09:11 asc Exp $
+# $Id: Post.pm,v 1.19 2006/06/08 14:50:15 asc Exp $
 use strict;
 
 package Net::Delicious::Post;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Post::VERSION = '0.96';
+$Net::Delicious::Post::VERSION = '0.99';
 
 =head1 NAME
 
@@ -158,6 +157,24 @@ sub time {
     return $self->{time};
 }
 
+=head2 $obj->shared($raw)
+
+Returns a boolean, unless $raw is true in which case the method will return
+"no" or ""
+
+=cut
+
+sub shared {
+        my $self = shift;
+        my $raw  = shift;
+
+        if ($raw) {
+                return $self->{shared};
+        }
+
+        return ($self->{shared} eq "no") ? 0 : 1;
+}
+
 =head2 $obj->as_hashref()
 
 Return the object as a hash ref safe for serializing and re-blessing.
@@ -175,16 +192,16 @@ sub as_hashref {
 
 sub _properties {
         my $pkg = shift;
-        return qw (description extended href time parent tags);
+        return qw (description extended href time parent tags others shared);
 }
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/08 14:50:15 $
 
 =head1 AUTHOR
 

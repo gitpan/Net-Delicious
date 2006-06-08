@@ -1,8 +1,8 @@
 package Net::Delicious::Constants::Uri;
 use strict;
 
-# $Id: Uri.pm,v 1.7 2006/01/13 17:09:11 asc Exp $
-$Net::Delicious::Constants::Uri::VERSION = '0.96';
+# $Id: Uri.pm,v 1.8 2006/06/07 02:42:36 asc Exp $
+$Net::Delicious::Constants::Uri::VERSION = '0.99';
 
 use URI;
 
@@ -37,7 +37,7 @@ String.
 
 =cut
 
-use constant URI_API => URI->new_abs("api/", URI_DELICIOUS); 
+use constant URI_API => URI->new("https://api.del.icio.us/v1/"); 
 
 BEGIN {
   use vars qw (@EXPORT_OK);
@@ -48,11 +48,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/07 02:42:36 $
 
 =head1 AUTHOR
 

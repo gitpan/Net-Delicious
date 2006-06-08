@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Response;
 use strict;
 
-# $Id: Response.pm,v 1.7 2006/01/13 17:09:11 asc Exp $
+# $Id: Response.pm,v 1.8 2006/06/07 02:42:36 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us response messages.
 
 =cut
 
-$Net::Delicious::Constants::Response::VERSION = '0.96';
+$Net::Delicious::Constants::Response::VERSION = '0.99';
 
 =head1 CONSTANTS
 
@@ -52,11 +52,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/07 02:42:36 $
 
 =head1 AUTHOR
 

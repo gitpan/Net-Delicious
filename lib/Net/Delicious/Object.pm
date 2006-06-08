@@ -1,8 +1,8 @@
-# $Id: Object.pm,v 1.5 2006/01/13 17:09:11 asc Exp $
+# $Id: Object.pm,v 1.6 2006/06/07 02:42:36 asc Exp $
 use strict;
 
 package Net::Delicious::Object;
-$Net::Delicious::Object::VERSION = '0.96';
+$Net::Delicious::Object::VERSION = '0.99';
 
 =head1 NAME 
 
@@ -49,11 +49,11 @@ sub _mk_hash {
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/07 02:42:36 $
 
 =head1 AUTHOR
 

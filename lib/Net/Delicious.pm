@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.40 2006/01/13 17:09:11 asc Exp $
+# $Id: Delicious.pm,v 1.44 2006/06/08 14:50:15 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '0.96';
+$Net::Delicious::VERSION = '0.99';
 
 =head1 NAME
 
@@ -14,8 +14,8 @@ Net::Delicious - OOP for the del.icio.us API
   use Net::Delicious;
   use Log::Dispatch::Screen;
 
-  my $del = Net::Delicious->new({user=>"foo",
-				 pswd=>"bar"});
+  my $del = Net::Delicious->new({user => "foo",
+				 pswd => "bar"});
 
   foreach my $p ($del->recent_posts()) {
       print $p->description()."\n";
@@ -252,6 +252,20 @@ String.
 
 Datestamp for post, format "CCYY-MM-DDThh:mm:ssZ"
 
+=item * B<shared>
+
+Boolean. (Technically, you need to pass the string "no" but N:D will handle 
+1s and 0s.)
+
+Make the post private. Default is true.
+
+=item * B<replace>
+
+Boolean. (Technically, you need to pass the string "no" but N:D will handle 
+1s and 0s.)
+
+Don't replace post if given url has already been posted. Default is true.
+
 =back
 
 Returns true or false.
@@ -269,9 +283,13 @@ sub add_post {
 
     #
 
-    my @params = ("url","description","extended","tags","dt");
+    my @params = ("url", "description", "extended", "tags", "dt", "shared", "replace");
 
-    my $req    = $self->_buildrequest(API_POSTSADD,$args,@params);
+    map { 
+            &_mk_no($args, $_);
+    } ("shared", "replace");
+
+    my $req    = $self->_buildrequest(API_POSTSADD, $args, @params);
     my $res    = $self->_sendrequest($req);
 
     #
@@ -310,7 +328,7 @@ sub delete_post {
 
     my @params = ("url");
 
-    my $req    = $self->_buildrequest(API_POSTSDELETE,$args,@params);
+    my $req    = $self->_buildrequest(API_POSTSDELETE, $args, @params);
     my $res    = $self->_sendrequest($req);
 
     #
@@ -348,15 +366,15 @@ sub posts_per_date {
 
     my @params = ("tag");
 
-    my $req = $self->_buildrequest(API_POSTSPERDATE,$args,@params);
+    my $req = $self->_buildrequest(API_POSTSPERDATE, $args, @params);
     my $res = $self->_sendrequest($req);
 
     if (! $res) {
             return;
     }
 
-    my $dates = $self->_getresults($res,"date");
-    return $self->_buildresults("Date",$dates);
+    my $dates = $self->_getresults($res, "date");
+    return $self->_buildresults("Date", $dates);
 }
 
 =head2 $obj->recent_posts(\%args)
@@ -405,8 +423,8 @@ sub recent_posts {
            return;
    }
 
-   my $posts = $self->_getresults($res,"post");
-   return $self->_buildresults("Post",$posts);
+   my $posts = $self->_getresults($res, "post");
+   return $self->_buildresults("Post", $posts);
 }
 
 =head2 $obj->all_posts()
@@ -438,8 +456,8 @@ sub all_posts {
                 return;
         }
         
-        my $posts = $self->_getresults($res,"post");
-        return $self->_buildresults("Post",$posts);
+        my $posts = $self->_getresults($res, "post");
+        return $self->_buildresults("Post", $posts);
 }
 
 =head2 $obj->all_posts_for_tag(\%args)
@@ -506,7 +524,7 @@ sub all_posts_for_tag {
                 return @posts;
         }
 
-        return $self->_buildresults("Post",\@posts);
+        return $self->_buildresults("Post", \@posts);
 }
 
 =head2 $obj->update()
@@ -562,7 +580,7 @@ sub posts {
         
         #
         
-        my @params = ("tag","dt","url");
+        my @params = ("tag", "dt", "url");
         
         my $req = $self->_buildrequest(API_POSTSFORUSER,
                                        $args,
@@ -576,8 +594,8 @@ sub posts {
     
         #
         
-        my $posts = $self->_getresults($res,"post");
-        return $self->_buildresults("Post",$posts);
+        my $posts = $self->_getresults($res, "post");
+        return $self->_buildresults("Post", $posts);
 }
 
 =head2 $obj->tags()
@@ -598,8 +616,8 @@ sub tags {
 
         #
 
-        my $tags = $self->_getresults($res,"tag");
-        return $self->_buildresults("Tag",$tags);
+        my $tags = $self->_getresults($res, "tag");
+        return $self->_buildresults("Tag", $tags);
 }
 
 =head2 $obj->rename_tag(\%args)
@@ -634,7 +652,7 @@ sub rename_tag {
         
         #
         
-        foreach my $el ("old","new") {
+        foreach my $el ("old", "new") {
                 if (! exists($args->{$el})) {
                         $self->logger()->error("you must define a '$el' element");
                         return 0;
@@ -672,7 +690,7 @@ sub bundles {
         my $req = $self->_buildrequest(API_BUNDLES_ALL);
         my $res = $self->_sendrequest($req);
         
-        my $bundles = $self->_getresults($res,"bundle");
+        my $bundles = $self->_getresults($res, "bundle");
         $bundles    = $bundles->[0];
         
         if (ref($bundles) ne "HASH") {
@@ -690,13 +708,13 @@ sub bundles {
         
         else {
                 @data = map { 
-                        {name=>$_,tags=>$bundles->{$_}->{'tags'} }
+                        {name => $_,tags => $bundles->{$_}->{'tags'} }
                 } keys %$bundles;
         }
         
         #
         
-        return $self->_buildresults("Bundle",\@data);
+        return $self->_buildresults("Bundle", \@data);
 }
 
 =head2 $obj->set_bundle(\%args)
@@ -727,9 +745,9 @@ sub set_bundle {
         my $self = shift;
         my $args = shift;
         
-        my @params = ("bundle","tags");
+        my @params = ("bundle", "tags");
         
-        my $req = $self->_buildrequest(API_BUNDLES_SET,$args,@params);
+        my $req = $self->_buildrequest(API_BUNDLES_SET, $args, @params);
         my $res = $self->_sendrequest($req);
         
         return $self->_isdone($res);
@@ -759,7 +777,7 @@ sub delete_bundle {
         
         my @params = ("bundle");
         
-        my $req = $self->_buildrequest(API_BUNDLES_DELETE,$args,@params);
+        my $req = $self->_buildrequest(API_BUNDLES_DELETE, $args,@params);
         my $res = $self->_sendrequest($req);
         
         return $self->_isdone($res);
@@ -1032,7 +1050,7 @@ sub _sendrequest {
         # errors
         
         if ($res->code() ne 200) {
-                $self->logger()->error(join(":",$res->code(),$res->message()));
+                $self->logger()->error(join(":", $res->code(), $res->message()));
                 return undef;
         }
         
@@ -1067,7 +1085,7 @@ sub _sendrequest {
 sub _authorize {
         my $self = shift;
         my $req  = shift;
-        $req->authorization_basic($self->{'__user'},$self->{'__pswd'});
+        $req->authorization_basic($self->{'__user'}, $self->{'__pswd'});
 }
 
 sub _ua {
@@ -1075,7 +1093,7 @@ sub _ua {
         
         if (ref($self->{'__ua'}) ne "LWP::UserAgent") {
                 my $ua = LWP::UserAgent->new();
-                $ua->agent(sprintf("%s, %s",__PACKAGE__,$Net::Delicious::VERSION));
+                $ua->agent(sprintf("%s, %s", __PACKAGE__, $Net::Delicious::VERSION));
                 
                 $self->{'__ua'} = $ua;
         }
@@ -1108,7 +1126,7 @@ sub _buildresults {
         
         $type =~ s/:://g;
         
-        my $fclass = join("::",__PACKAGE__,$type);
+        my $fclass = join("::", __PACKAGE__, $type);
         eval "require $fclass";
         
         if ($@) {
@@ -1158,6 +1176,25 @@ sub _isdone {
         }
 }
 
+# This assumes the default is true (as in not "no")
+
+sub _mk_no {
+        my $args = shift;
+        my $key  = shift;
+
+        if (! exists($args->{$key})) {
+                return;
+        }
+
+        if ($args->{$key}) {
+                delete $args->{$key};
+                return;
+        }
+
+        $args->{$_} = "no";
+        return;
+}
+
 =head1 ERRORS
 
 Errors are logged via the object's I<logger> method which returns
@@ -1166,11 +1203,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE 
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/08 14:50:15 $
 
 =head1 AUTHOR
 
@@ -1182,11 +1219,34 @@ http://del.icio.us/doc/api
 
 =head1 NOTES
 
-The version number (0.9) reflects the fact the del.icio.us API
-still has a great big "I am a moving target" disclaimer around
-its neck.
-
 This package implements the API in its entirety as of I<DATE>.
+
+Version 0.99 is a quick maintenance release to reflect changes to the 
+del.icio.us API. Version 1.0 will remain fully backwards compatible but will
+introduce the following changes :
+
+=over 4
+
+=item *
+
+Allow for results to be parsed by XML::LibXML or XML::XPath and
+returned as like objects.
+
+=item *
+
+Allow N:D objects to be invoked in a 'not strict' mode if users want or need
+to pass custom API method arguments - in the event that features are added to
+the API and this package is not updated in a timely fashion.
+
+=item *
+
+Allow users to specify an endpoint, for basically the same reasons as above.
+
+=item *
+
+Remove methods that are no longer part of the API.
+
+=back
 
 =head1 LICENSE
 

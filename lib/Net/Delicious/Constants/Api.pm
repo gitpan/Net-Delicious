@@ -1,7 +1,7 @@
 package Net::Delicious::Constants::Api;
 use strict;
 
-# $Id: Api.pm,v 1.12 2006/01/13 17:09:11 asc Exp $
+# $Id: Api.pm,v 1.14 2006/06/08 14:19:47 asc Exp $
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ Constant variables for del.icio.us API calls.
 
 =cut
 
-$Net::Delicious::Constants::Api::VERSION = '0.96';
+$Net::Delicious::Constants::Api::VERSION = '0.99';
 
 use constant LOCAL_API_POSTS   => "posts";
 use constant LOCAL_API_TAGS    => "tags";
@@ -34,7 +34,7 @@ String.
 
 =cut
 
-use constant API_POSTSPERDATE => join("/",LOCAL_API_POSTS,"dates");
+use constant API_POSTSPERDATE => join("/", LOCAL_API_POSTS, "dates");
 
 =head2 API_POSTSPERDATE
 
@@ -42,7 +42,7 @@ String.
 
 =cut
 
-use constant API_POSTSFORUSER => join("/",LOCAL_API_POSTS,"get");
+use constant API_POSTSFORUSER => join("/", LOCAL_API_POSTS, "get");
 
 =head2 API_POSTSPERDATE
 
@@ -56,10 +56,10 @@ String.
 
 =cut
 
-use constant API_POSTSFORUSER_UPDATE => join("/",LOCAL_API_POSTS,"update");
+use constant API_POSTSFORUSER_UPDATE => join("/", LOCAL_API_POSTS, "update");
 
-use constant API_POSTSFORUSER_RECENT => join("/",LOCAL_API_POSTS,"recent");
-use constant API_POSTSFORUSER_ALL    => join("/",LOCAL_API_POSTS,"all");
+use constant API_POSTSFORUSER_RECENT => join("/", LOCAL_API_POSTS, "recent");
+use constant API_POSTSFORUSER_ALL    => join("/", LOCAL_API_POSTS, "all");
 
 =head2 API_POSTSPERDATE
 
@@ -67,9 +67,9 @@ String.
 
 =cut
 
-use constant API_POSTSADD    => join("/",LOCAL_API_POSTS,"add");
+use constant API_POSTSADD    => join("/", LOCAL_API_POSTS, "add");
 
-use constant API_POSTSDELETE => join("/",LOCAL_API_POSTS,"delete");
+use constant API_POSTSDELETE => join("/", LOCAL_API_POSTS, "delete");
 
 =head2 API_TAGSFORUSER
 
@@ -77,7 +77,7 @@ String.
 
 =cut
 
-use constant API_TAGSFORUSER => join("/",LOCAL_API_TAGS,"get");
+use constant API_TAGSFORUSER => join("/", LOCAL_API_TAGS, "get");
 
 =head2 API_TAGSRENAME
 
@@ -85,7 +85,7 @@ String.
 
 =cut
 
-use constant API_TAGSRENAME => join("/",LOCAL_API_TAGS,"rename");
+use constant API_TAGSRENAME => join("/", LOCAL_API_TAGS, "rename");
 
 =head2 API_INBOXDATES
 
@@ -93,7 +93,7 @@ String.
 
 =cut
 
-use constant API_INBOXDATES => join("/",LOCAL_API_INBOX,"dates");
+use constant API_INBOXDATES => join("/", LOCAL_API_INBOX, "dates");
 
 =head2 API_INBOXSUBS
 
@@ -101,7 +101,7 @@ String.
 
 =cut
 
-use constant API_INBOXSUBS => join("/",LOCAL_API_INBOX,"subs");
+use constant API_INBOXSUBS => join("/", LOCAL_API_INBOX, "subs");
 
 =head2 API_INBOXFORDATE
 
@@ -109,7 +109,7 @@ String.
 
 =cut
 
-use constant API_INBOXFORDATE => join("/",LOCAL_API_INBOX,"get");
+use constant API_INBOXFORDATE => join("/", LOCAL_API_INBOX, "get");
 
 =head2 API_INBOXADDSUB
 
@@ -117,7 +117,7 @@ String.
 
 =cut
 
-use constant API_INBOXADDSUB => join("/",LOCAL_API_INBOX,"sub");
+use constant API_INBOXADDSUB => join("/", LOCAL_API_INBOX, "sub");
 
 =head2 API_INBOXUNSUB
 
@@ -125,13 +125,13 @@ String.
 
 =cut
 
-use constant API_INBOXUNSUB => join("/",LOCAL_API_INBOX,"unsub");
+use constant API_INBOXUNSUB => join("/", LOCAL_API_INBOX, "unsub");
 
-use constant API_BUNDLES_ALL => join("/",LOCAL_API_BUNDLES,"all");
+use constant API_BUNDLES_ALL => join("/", LOCAL_API_BUNDLES, "all");
 
-use constant API_BUNDLES_SET => join("/",LOCAL_API_BUNDLES,"set");
+use constant API_BUNDLES_SET => join("/", LOCAL_API_BUNDLES, "set");
 
-use constant API_BUNDLES_DELETE => join("/",LOCAL_API_BUNDLES,"delete");
+use constant API_BUNDLES_DELETE => join("/", LOCAL_API_BUNDLES, "delete");
 
 BEGIN {
     use vars qw (@EXPORT_OK);
@@ -162,11 +162,11 @@ BEGIN {
 
 =head1 VERSION
 
-0.96
+0.99
 
 =head1 DATE
 
-$Date: 2006/01/13 17:09:11 $
+$Date: 2006/06/08 14:19:47 $
 
 =head1 AUTHOR
 
