@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.44 2006/06/08 14:50:15 asc Exp $
+# $Id: Delicious.pm,v 1.64 2006/06/20 02:07:16 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '0.99';
+$Net::Delicious::VERSION = '1.0';
 
 =head1 NAME
 
@@ -27,13 +27,12 @@ OOP for the del.icio.us API
 
 =cut
 
-use Net::Delicious::Constants qw (:api :pause :response :uri);
+use Net::Delicious::Constants qw (:pause :response :uri);
+use Net::Delicious::Config;
 
 use HTTP::Request;
 use LWP::UserAgent;
 use URI;
-
-use XML::Simple;
 
 use Log::Dispatch;
 use Data::Dumper;
@@ -57,8 +56,16 @@ use English;
 =head2 __PACKAGE__->new(\%args || Config::Simple)
 
 Arguments to the Net::Delicious object may be defined in one of three ways :
-As a single hash reference or; As a reference to a I<Config::Simple> object; as
-a path to a file that may be read by the I<Config::Simple>.
+
+=over 4
+
+=item * As a single hash reference 
+
+=item * As a reference to a I<Config::Simple> object
+
+=item * As a path to a file that may be read by the I<Config::Simple>.
+
+=back
 
 The first option isn't going away any time soon but should be considered as
 deprecated. Valid hash reference arguments are :
@@ -125,6 +132,64 @@ the I<all_posts> method to prevent abusive requests.
 Default is the current user's home directory, followed by
 a temporary directory as determined by File::Temp.
 
+=item * B<xml_parser>
+
+String.
+
+You may specify one of three XML parsers to use to handle response
+messages from the del.icio.us servers. You many want to do this if,
+instead of Perl-ish objects, you want to access the raw XML and parse
+it with XPath or XSLT or some other crazy moon language.
+
+=over 4
+
+=item * B<simple>
+
+This uses L<XML::Simple> to parse messages. If present, all successful
+API method calls will return, where applicable,  Net::Delicious::* objects.
+
+=item * B<libxml>
+
+This uses L<XML::LibXML> to parse messages. If present, all successful
+API method calls will return a I<XML::LibXML::Document> object.
+
+Future releases may allow responses parsed with libxml to be returned as
+Net::Delicious::* objects.
+
+=item * B<xpath>
+
+This uses L<XML::XPath> to parse messages. If present, all successful
+API method calls will return a I<XML::XPath> object.
+
+Future releases may allow responses parsed with XML::XPath to be returned as
+Net::Delicious::* objects.
+
+=back
+
+The default value is B<simple>.
+
+=item * B<force_xml_objects>
+
+Boolean.
+
+Set to true if you are using L<XML::Simple> to parse response messages
+from the del.icio.us servers but want to return the object's original
+data structure rather than Net::Delicious::* objects.
+
+Default is false.
+
+=item * B<endpoint>
+
+String.
+
+Set the endpoint for all API calls.
+
+There's no particular reason you should ever need to set this unless,
+say, this module falls horribly out of date with the API itself. Anyway, 
+now you can.
+
+Default is B<https://api.del.icio.us/v1/>
+
 =item * B<debug>
 
 Boolean.
@@ -137,12 +202,16 @@ Add a I<Log::Dispatch::Screen> dispatcher to log debug
 Returns a Net::Delicious object or undef if there was a problem
 creating the object.
 
+It is also possible to set additional config options to tweak the
+default settings for API call parameters and API response properties.
+Please consult the POD for L<Net::Delicious::Config> for details.
+
 =cut
 
 sub new {
         my $pkg  = shift;
         my $args = shift;
-        
+    
         #
         
         my $self = {
@@ -150,6 +219,7 @@ sub new {
                     '__paused'  => 0,
                    };
         
+        #
         #
 
         my $cfg = undef;
@@ -174,31 +244,55 @@ sub new {
                 }
         }
 
-        else {}
+        else {
+                $cfg = Net::Delicious::Config->mk_config($args);
+
+                if (! $cfg) {
+                        warn "Failed to create internal config object, $!";
+                        return;
+                }
+        }
                 
+        Net::Delicious::Config->merge_configs($cfg);
+        $self->{'__cfg'} = $cfg;
+
+        #
+        #
         #
 
-        if ($cfg) {
-                $self->{'__user'}    = $cfg->param("delicious.user");
-                $self->{'__pswd'}    = $cfg->param("delicious.pswd");
-                $self->{'__updates'} = $cfg->param("delicious.updates");
+        my $parser_cfg = $cfg->param("delicious.xml_parser");
+        my $parser_pkg = undef;
+
+        if ($parser_cfg eq "libxml") {
+                $parser_pkg = "XML::LibXML";
+        }
+
+        elsif ($parser_cfg eq "xpath") {
+                $parser_pkg = "XML::XPath";
         }
 
         else {
-                $self->{'__user'}    = $args->{'user'};
-                $self->{'__pswd'}    = $args->{'pswd'};
-                $self->{'__updates'} = $args->{'updates'};
+                $parser_pkg = "XML::Simple";
+        }
+        
+        eval "require $parser_pkg";
+
+        if ($@) {
+                warn "Failed to load XML parser $parser_pkg, $@";
+                return;
         }
 
+        $parser_pkg->import();
+
+        #
+        #
         #
 
         bless $self, $pkg;
 
         #
 
-        my $debug = ($cfg) ? $cfg->param("delicious.debug") : $args->{'debug'};
-
-        if ($debug) {
+        if ($self->config("delicious.debug")) {
                 require Log::Dispatch::Screen;
                 $self->logger()->add(Log::Dispatch::Screen->new(name      => "debug",
                                                                 min_level => "debug",
@@ -210,7 +304,25 @@ sub new {
         return $self;
 }
 
-=head1 OBJECT METHODS
+=head1 UPDATE METHODS
+
+=cut
+
+=head2 $obj->update()
+
+Returns return the time of the last update formatted as 
+a W3CDTF string.
+
+=cut
+
+sub update {
+        my $self = shift;
+
+        my $res = $self->_execute_method("delicious.posts.update"); 
+        return ($res) ? $res->{time} : undef;
+}
+
+=head1 POST METHODS
 
 =cut
 
@@ -276,23 +388,11 @@ sub add_post {
     my $self = shift;
     my $args = shift;
 
-    if (! $args->{url}) {
-	$self->logger()->error("you must define a URL");
-	return 0;
+    my $res = $self->_execute_method("delicious.posts.add", $args);
+
+    if (! $self->_use_rsp_parser()) {
+            return $res;
     }
-
-    #
-
-    my @params = ("url", "description", "extended", "tags", "dt", "shared", "replace");
-
-    map { 
-            &_mk_no($args, $_);
-    } ("shared", "replace");
-
-    my $req    = $self->_buildrequest(API_POSTSADD, $args, @params);
-    my $res    = $self->_sendrequest($req);
-
-    #
 
     return $self->_isdone($res);
 }
@@ -319,19 +419,11 @@ sub delete_post {
     my $self = shift;
     my $args = shift;
 
-    if (! $args->{url}) {
-	$self->logger()->error("you must define a URL");
-	return 0;
+    my $res = $self->_execute_method("delicious.posts.delete", $args);
+
+    if (! $self->_use_rsp_parser()) {
+            return $res;
     }
-
-    #
-
-    my @params = ("url");
-
-    my $req    = $self->_buildrequest(API_POSTSDELETE, $args, @params);
-    my $res    = $self->_sendrequest($req);
-
-    #
 
     return $self->_isdone($res);
 }
@@ -364,13 +456,14 @@ sub posts_per_date {
     my $self = shift;
     my $args = shift;
 
-    my @params = ("tag");
-
-    my $req = $self->_buildrequest(API_POSTSPERDATE, $args, @params);
-    my $res = $self->_sendrequest($req);
+    my $res = $self->_execute_method("delicious.posts.dates", $args);
 
     if (! $res) {
             return;
+    }
+
+    if (! $self->_use_rsp_parser()) {
+            return $res;
     }
 
     my $dates = $self->_getresults($res, "date");
@@ -408,23 +501,21 @@ in a scalar context.
 =cut
 
 sub recent_posts {
-   my $self = shift;
-   my $args = shift;
-
-   my @params = ("tag","count");
-
-   my $req = $self->_buildrequest(API_POSTSFORUSER_RECENT,
-				  $args,
-				  @params);
-
-   my $res = $self->_sendrequest($req);
-
-   if (! $res) {
-           return;
-   }
-
-   my $posts = $self->_getresults($res, "post");
-   return $self->_buildresults("Post", $posts);
+        my $self = shift;
+        my $args = shift;
+        
+        my $res = $self->_execute_method("delicious.posts.recent", $args);
+        
+        if (! $res) {
+                return;
+        }
+        
+        if (! $self->_use_rsp_parser()) {
+                return $res;
+        }
+        
+        my $posts = $self->_getresults($res, "post");
+        return $self->_buildresults("Post", $posts);
 }
 
 =head2 $obj->all_posts()
@@ -449,98 +540,18 @@ sub all_posts {
                 return;
         }
 
-        my $req = $self->_buildrequest(API_POSTSFORUSER_ALL);
-        my $res = $self->_sendrequest($req);
-        
+        my $res = $self->_execute_method("delicious.posts.all");
+
         if (! $res) {
                 return;
+        }
+
+        if (! $self->_use_rsp_parser()) {
+                return $res;
         }
         
         my $posts = $self->_getresults($res, "post");
         return $self->_buildresults("Post", $posts);
-}
-
-=head2 $obj->all_posts_for_tag(\%args)
-
-This is a just a helper method which hides a bunch of API calls behind
-a single method.
-
-Valid arguments are :
-
-=over 4
-
-=item * B<tag>
-
-String. I<required>
-
-The tag you want to retrieve posts for.
-
-=back
-
-Returns a list of I<Net::Delicious::Post> objects
-when called in an array context.
-
-Returns a I<Net::Delicious::Iterator> object when called
-in a scalar context.
-
-=cut
-
-sub all_posts_for_tag {
-        my $self = shift;
-        my $args = shift;
-        
-        $args ||= {};
-        
-        if (! $args->{tag}) {
-                $self->logger()->error("You must specify a tag");
-                return;
-        }
-
-        my $it = $self->posts_per_date({tag=>$args->{tag}});
-
-        if (! $it) {
-                return;
-        }
-
-        my @posts = ();
-
-        while (my $dt = $it->next()) {
-
-                my @links = $self->posts({tag => $args->{tag},
-                                          dt  => $dt->date()});
-
-                if (wantarray) {
-                        push @posts, @links;
-                }
-                
-                else {
-                        map {
-                                push @posts, $_->as_hashref();
-                        } @links;
-                }
-        }
-
-        if (wantarray) {
-                return @posts;
-        }
-
-        return $self->_buildresults("Post", \@posts);
-}
-
-=head2 $obj->update()
-
-Returns return the time of the last update formatted as 
-a W3CDTF string.
-
-=cut
-
-sub update {
-        my $self = shift;
-
-        my $req = $self->_buildrequest(API_POSTSFORUSER_UPDATE);
-        my $res = $self->_sendrequest($req);
-        
-        return ($res) ? $res->{time} : undef;
 }
 
 =head2 $obj->posts(\%args)
@@ -579,24 +590,26 @@ sub posts {
         my $args = shift;
         
         #
-        
-        my @params = ("tag", "dt", "url");
-        
-        my $req = $self->_buildrequest(API_POSTSFORUSER,
-                                       $args,
-                                       @params);
-        
-        my $res = $self->_sendrequest($req);
+
+        my $res = $self->_execute_method("delicious.posts.get", $args);
         
         if (! $res) {
                 return;
         }
     
+        if (! $self->_use_rsp_parser()) {
+                return $res;
+        }
+        
         #
         
         my $posts = $self->_getresults($res, "post");
         return $self->_buildresults("Post", $posts);
 }
+
+=head1 TAG METHODS
+
+=cut
 
 =head2 $obj->tags()
 
@@ -606,12 +619,15 @@ Returns a list of tags.
 
 sub tags {
         my $self = shift;
-        
-        my $req = $self->_buildrequest(API_TAGSFORUSER);
-        my $res = $self->_sendrequest($req);
-        
+
+        my $res = $self->_execute_method("delicious.tags.get");
+
         if (! $res) {
                 return;
+        }
+
+        if (! $self->_use_rsp_parser()) {
+                return $res;
         }
 
         #
@@ -649,30 +665,91 @@ Returns true or false.
 sub rename_tag {
         my $self = shift;
         my $args = shift;
-        
-        #
-        
-        foreach my $el ("old", "new") {
-                if (! exists($args->{$el})) {
-                        $self->logger()->error("you must define a '$el' element");
-                        return 0;
-                }
+
+        my $res = $self->_execute_method("delicious.tags.rename", $args);
+
+        if (! $self->_use_rsp_parser()) {
+                return $res;
         }
-        
-        #
-        
-        my @params = ("old","new");
-        
-        my $req = $self->_buildrequest(API_TAGSRENAME,
-                                       $args,
-                                       @params);
-        
-        my $res = $self->_sendrequest($req);
-        
-        #
-        
+
         return $self->_isdone($res);
 }
+
+=head2 $obj->all_posts_for_tag(\%args)
+
+This is a just a helper method which hides a bunch of API calls behind
+a single method.
+
+Valid arguments are :
+
+=over 4
+
+=item * B<tag>
+
+String. I<required>
+
+The tag you want to retrieve posts for.
+
+=back
+
+Returns a list of I<Net::Delicious::Post> objects
+when called in an array context.
+
+Returns a I<Net::Delicious::Iterator> object when called
+in a scalar context.
+
+=cut
+
+sub all_posts_for_tag {
+        my $self = shift;
+        my $args = shift;
+
+        if (! $self->_use_rsp_parser()) {
+                $self->logger()->error("This method does not work with the XML parser settings you have chosen");
+                return;
+        }
+        
+        $args ||= {};
+        
+        if (! $args->{tag}) {
+                $self->logger()->error("You must specify a tag");
+                return;
+        }
+
+        my $it = $self->posts_per_date({tag => $args->{tag}});
+
+        if (! $it) {
+                return;
+        }
+
+        my @posts = ();
+
+        while (my $dt = $it->next()) {
+
+                my @links = $self->posts({tag => $args->{tag},
+                                          dt  => $dt->date()});
+
+                if (wantarray) {
+                        push @posts, @links;
+                }
+                
+                else {
+                        map {
+                                push @posts, $_->as_hashref();
+                        } @links;
+                }
+        }
+
+        if (wantarray) {
+                return @posts;
+        }
+
+        return $self->_buildresults("Post", \@posts);
+}
+
+=head1 BUNDLE METHODS
+
+=cut
 
 =head2 $obj->bundles()
 
@@ -687,8 +764,11 @@ in a scalar context.
 sub bundles {
         my $self = shift;
         
-        my $req = $self->_buildrequest(API_BUNDLES_ALL);
-        my $res = $self->_sendrequest($req);
+        my $res = $self->_execute_method("delicious.tags.bundles.all");
+
+        if (! $self->_use_rsp_parser()) {
+                return $res;
+        }
         
         my $bundles = $self->_getresults($res, "bundle");
         $bundles    = $bundles->[0];
@@ -745,11 +825,12 @@ sub set_bundle {
         my $self = shift;
         my $args = shift;
         
-        my @params = ("bundle", "tags");
-        
-        my $req = $self->_buildrequest(API_BUNDLES_SET, $args, @params);
-        my $res = $self->_sendrequest($req);
-        
+        my $res = $self->_execute_method("delicious.tags.bundles.set", $args);
+
+        if (! $self->_use_rsp_parser()) {
+                return $res;
+        }
+
         return $self->_isdone($res);
 }
 
@@ -775,85 +856,18 @@ sub delete_bundle {
         my $self = shift;
         my $args = shift;
         
-        my @params = ("bundle");
-        
-        my $req = $self->_buildrequest(API_BUNDLES_DELETE, $args,@params);
-        my $res = $self->_sendrequest($req);
-        
+        my $res = $self->_execute_method("delicious.tags.bundles.delete", $args); 
+
+        if (! $self->_use_rsp_parser()) {
+                return $res;
+        }
+
         return $self->_isdone($res);
 }
 
-=head2 $obj->inbox_for_date(\%args)
-
-B<This method is no longer part of the del.icio.us API>. It will be removed
-from Net::Delicious in a subsequent release.
+=head1 HELPER METHODS
 
 =cut
-
-sub inbox_for_date {
-        my $self = shift;
-
-        $self->logger()->error("This method is no longer part of the del.icio.us API");
-        return;        
-}
-
-=head2 $obj->inbox_dates()
-
-B<This method is no longer part of the del.icio.us API>. It will be removed
-from Net::Delicious in a subsequent release.
-
-=cut
-
-sub inbox_dates {
-        my $self = shift;
-
-        $self->logger()->error("This method is no longer part of the del.icio.us API");
-        return;
-}
-
-=head2 $obj->inbox_subscriptions()
-
-B<This method is no longer part of the del.icio.us API>. It will be removed
-from Net::Delicious in a subsequent release.
-
-=cut
-
-sub inbox_subscriptions {
-        my $self = shift;
-        
-        $self->logger()->error("This method is no longer part of the del.icio.us API");
-        return;
-}
-
-=head2 $obj->add_inbox_subscription(\%args)
-
-B<This method is no longer part of the del.icio.us API>. It will be removed
-from Net::Delicious in a subsequent release.
-
-=cut
-
-sub add_inbox_subscription {
-        my $self = shift;
-        my $args = shift;
-
-        $self->logger()->error("This method is no longer part of the del.icio.us API");
-        return;        
-}
-
-=head2 $obj->remove_inbox_subscription(\%args)
-
-B<This method is no longer part of the del.icio.us API>. It will be removed
-from Net::Delicious in a subsequent release.
-
-=cut
-
-sub remove_inbox_subscription {
-        my $self = shift;
-        my $args = shift;
-
-        $self->logger()->error("This method is no longer part of the del.icio.us API");
-        return;
-}
 
 =head2 $obj->logger()
 
@@ -871,6 +885,46 @@ sub logger {
         
         return $self->{'__logger'};    
 }
+
+=head2 $obj->config(@args)
+
+This is just a short-cut for calling the current object's internal
+Config::Simple I<param> method. You may use to it to get and set 
+config parameters although they will not be saved to disk when the object
+is destroyed.
+
+=cut
+
+sub config {
+        my $self = shift;
+        return $self->{'__cfg'}->param(@_);
+}
+
+=head2 $obj->username()
+
+Returns the del.icio.us username for the current object.
+
+=cut
+
+sub username {
+        my $self = shift;
+        return $self->config("delicious.user");
+}
+
+=head2 $obj->password()
+
+Returns the del.icio.us password for the current object.
+
+=cut
+
+sub password {
+        my $self = shift;
+        return $self->config("delicious.pswd");
+}
+
+#
+# Private methods
+#
 
 sub _read_update {
         my $self = shift;
@@ -928,7 +982,7 @@ sub _path_update {
         my $self = shift;
         
         my $root = undef;
-        my $file = sprintf(".del.icio.us.%s",$self->{'__user'});;
+        my $file = sprintf(".del.icio.us.%s", $self->config("delicious.user"));
         
         if ((exists($self->{'__updates'})) && (-d $self->{'__updated'})) {
                 $root = $self->{'__updates'};
@@ -947,21 +1001,82 @@ sub _path_update {
         return File::Spec->catfile($root,$file);
 }
 
+sub _execute_method {
+        my $self = shift;
+        my $meth = shift;
+        my $args = shift;
+
+        my $params = $self->_validateinput($meth, $args);
+
+        if (! $params) {
+                return 0;
+        }
+
+        $meth   =~ /[^\.]+\.(.*)$/;
+        my $uri = $1;
+
+        $uri =~ s/\./\//g;
+
+        my $req    = $self->_buildrequest($uri, $args, $params);
+        my $res    = $self->_sendrequest($req);
+
+        return $res;
+}
+
+sub _validateinput {
+        my $self  = shift;
+        my $block = shift;
+        my $args  = shift;
+
+        if (! $args) {
+                $args = {};
+        }
+
+        $block =~ s/\./_/g;
+
+        my $rules = $self->config(-block => $block);
+
+        if (! defined($rules)) {
+                $self->logger()->error("Unknown error validating user input; unable to find validation rules for $block");
+                return undef;
+        }
+
+        my @params = ();
+
+        foreach my $param (keys %$rules) {
+
+                my ($required, $type) = split(";", $rules->{$param});
+
+                if (($required) && (! exists($args->{$param}))) {
+                        $self->logger()->error("$param is a required parameter");
+                        return undef;
+                }
+
+                if ($type eq "no") {
+                        $self->_mkno($args, $param);
+                }
+
+                push @params, $param;
+        }
+
+        return \@params;
+}
+
 sub _buildrequest {
         my $self   = shift;
         my $meth   = shift;
         my $args   = shift;
-        
-        # @params are assumed to anything
-        # that's left in @_
+        my $params = shift;
 
         my %query = map {
                 $_ => $args->{$_}
         } grep {
                 exists($args->{$_}) && $args->{$_}
-        } @_;
+        } @$params;
 
-        my $uri = URI->new_abs($meth, URI_API);
+        my $endpoint = $self->config("delicious.endpoint");
+        my $uri      = URI->new_abs($meth, $endpoint);
+
         $uri->query_form(%query);
 
         my $req = HTTP::Request->new(GET => $uri);
@@ -1059,33 +1174,48 @@ sub _sendrequest {
                 return undef;
         }
 
-        # munge munge munge
-        
-        my $xml = undef;
-        
-        eval { 
-                $xml = XMLin($res->content());
+        return $self->_parse_xml($res);
+}
+
+sub _parse_xml {
+        my $self = shift;
+        my $res  = shift;
+
+        my $parser = $self->config("delicious.xml_parser");
+        my $xml    = undef;
+
+        eval {
+                if ($parser eq "libxml") {
+                        my $parser = XML::LibXML->new();
+                        $xml = $parser->parse_string($res->content());
+                }
+                
+                elsif ($parser eq "xpath") {
+                        $xml = XML::XPath->new(xml => $res->content());
+                }
+                
+                else {
+                        $xml = XMLin($res->content());                        
+                }
         };
-        
-        $self->logger()->debug(Dumper($xml));
-        
+
         if ($@) {
-                $self->logger()->error($@);
+                $self->logger()->error("failed to parse response with $parser, $@");
                 return undef;
         }
-        
+
         if ($xml eq RESPONSE_ERROR) {
                 $self->logger()->error($xml);
                 return undef;
         }
-        
+
         return $xml;
 }
 
 sub _authorize {
         my $self = shift;
         my $req  = shift;
-        $req->authorization_basic($self->{'__user'}, $self->{'__pswd'});
+        $req->authorization_basic($self->username(), $self->password());
 }
 
 sub _ua {
@@ -1124,8 +1254,15 @@ sub _buildresults {
         my $type    = shift;
         my $results = shift;
         
-        $type =~ s/:://g;
+        #
         
+        $type =~ s/:://g;
+
+        if ($self->config("delicious.use_dev")) {
+                # Debugging ... so much hate
+                unshift @INC, "./lib";
+        }
+
         my $fclass = join("::", __PACKAGE__, $type);
         eval "require $fclass";
         
@@ -1133,24 +1270,57 @@ sub _buildresults {
                 $self->logger()->error($@);
                 return undef;
         }
+
+        my $count = scalar(@$results);
         
+        for (my $i=0; $i < $count; $i++) {
+                $results->[$i] = $self->_mk_object_data($type, $results->[$i]);
+        }
+
         if (wantarray) {
                 return map { 
                         $fclass->new($_);
                 } @$results;
         }
         
-        #
-        
         require Net::Delicious::Iterator;
         return Net::Delicious::Iterator->new($fclass,
                                              $results);    
 }
 
+sub _mk_object_data {
+        my $self    = shift;
+        my $type    = shift;
+        my $results = shift;
+
+        my $block = lc($type);
+        my @props = split("," , $self->config("delicious_properties.$block"));
+
+        my %object_data = map {
+                $_ => $results->{$_};
+        } @props;
+
+        return \%object_data;
+}
+
+sub _use_rsp_parser {
+        my $self = shift;
+
+        if ($self->config("delicious.xml_parser") ne "simple") {
+                return 0;
+        }
+
+        if ($self->config("delicious.force_xml_objects")) {
+                return 0;
+        }
+
+        return 1;
+}
+
 sub _isdone {
         my $self = shift;
         my $res  = shift;
-        
+
         if (! $res) {
                 return 0;
         }
@@ -1178,7 +1348,8 @@ sub _isdone {
 
 # This assumes the default is true (as in not "no")
 
-sub _mk_no {
+sub _mkno {
+        my $self = shift;
         my $args = shift;
         my $key  = shift;
 
@@ -1191,7 +1362,7 @@ sub _mk_no {
                 return;
         }
 
-        $args->{$_} = "no";
+        $args->{$key} = "no";
         return;
 }
 
@@ -1203,11 +1374,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE 
 
-$Date: 2006/06/08 14:50:15 $
+$Date: 2006/06/20 02:07:16 $
 
 =head1 AUTHOR
 
@@ -1220,33 +1391,6 @@ http://del.icio.us/doc/api
 =head1 NOTES
 
 This package implements the API in its entirety as of I<DATE>.
-
-Version 0.99 is a quick maintenance release to reflect changes to the 
-del.icio.us API. Version 1.0 will remain fully backwards compatible but will
-introduce the following changes :
-
-=over 4
-
-=item *
-
-Allow for results to be parsed by XML::LibXML or XML::XPath and
-returned as like objects.
-
-=item *
-
-Allow N:D objects to be invoked in a 'not strict' mode if users want or need
-to pass custom API method arguments - in the event that features are added to
-the API and this package is not updated in a timely fashion.
-
-=item *
-
-Allow users to specify an endpoint, for basically the same reasons as above.
-
-=item *
-
-Remove methods that are no longer part of the API.
-
-=back
 
 =head1 LICENSE
 

@@ -1,10 +1,10 @@
-# $Id: Date.pm,v 1.10 2006/06/07 02:42:36 asc Exp $
+# $Id: Date.pm,v 1.11 2006/06/17 16:56:37 asc Exp $
 use strict;
 
 package Net::Delicious::Date;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Date::VERSION = '0.99';
+$Net::Delicious::Date::VERSION = '1.0';
 
 =head1 NAME
 
@@ -68,10 +68,7 @@ Returns a string.
 
 =cut
 
-sub tag {
-    my $self = shift;
-    return $self->{tag};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->date()
 
@@ -79,10 +76,7 @@ Returns a date string, formatted I<YYYY-MM-DD>
 
 =cut
 
-sub date {
-    my $self = shift;
-    return $self->{date};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->count()
 
@@ -90,10 +84,7 @@ Returns an int.
 
 =cut
 
-sub count {
-    my $self = shift;
-    return $self->{count};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->as_hashref()
 
@@ -103,18 +94,13 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 # Defined in Net::Delicious::Object
 
-sub _properties {
-        my $pkg = shift;
-        return qw (tag date count user);
-}
-
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/06/17 16:56:37 $
 
 =head1 AUTHOR
 

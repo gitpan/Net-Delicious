@@ -1,8 +1,8 @@
-# $Id: Object.pm,v 1.6 2006/06/07 02:42:36 asc Exp $
+# $Id: Object.pm,v 1.13 2006/06/20 00:06:02 asc Exp $
 use strict;
 
 package Net::Delicious::Object;
-$Net::Delicious::Object::VERSION = '0.99';
+$Net::Delicious::Object::VERSION = '1.0';
 
 =head1 NAME 
 
@@ -23,9 +23,28 @@ package directly.
 sub new {
         my $pkg  = shift;
         my $args = shift;
-        
-        my %self = $pkg->_mk_hash($args);
-        return bless \%self, $pkg;
+
+        my @keys = keys %$args;
+
+        my $self = bless \%{$args}, $pkg;
+        $self->{'__properties'} = \@keys;
+
+        my $class = ref($self);
+
+        foreach my $meth (@keys) {
+
+                if (! $self->can($meth)) {
+
+                        no strict "refs";
+
+                        *{ $class . "::" . $meth } = sub {
+                                my $instance = shift;
+                                return $instance->{$meth};
+                        };
+                }
+        }
+
+        return $self;
 }
 
 sub as_hashref {
@@ -34,26 +53,22 @@ sub as_hashref {
 }
 
 sub _mk_hash {
-        my $pkg = shift;
-        my $src = (ref($pkg)) ? $pkg : shift;
+        my $self = shift;
 
-        my @props = $pkg->_properties();
-        my %hash  = ();
+        my %hash = map {
+                $_ => $self->{$_};
+        } @{$self->{'__properties'}};
 
-        foreach my $p (@props) {
-                $hash{$p} = $src->{$p};
-        }
-        
         return %hash;
 }
 
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/06/20 00:06:02 $
 
 =head1 AUTHOR
 

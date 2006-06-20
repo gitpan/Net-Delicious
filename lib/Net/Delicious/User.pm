@@ -1,10 +1,10 @@
-# $Id: User.pm,v 1.7 2006/06/07 02:42:36 asc Exp $
+# $Id: User.pm,v 1.8 2006/06/17 16:56:37 asc Exp $
 use strict;
 
 package Net::Delicious::User;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::User::VERSION = '0.99';
+$Net::Delicious::User::VERSION = '1.0';
 
 =head1 NAME
 
@@ -66,10 +66,7 @@ Returns an string.
 
 =cut
 
-sub name {
-    my $self = shift;
-    return $self->{name};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->as_hashref()
 
@@ -79,18 +76,13 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 # Defined in Net::Delicious::Object
 
-sub _properties {
-        my $pkg = shift;
-        return qw ( name );
-}
-
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/06/17 16:56:37 $
 
 =head1 AUTHOR
 

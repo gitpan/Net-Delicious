@@ -1,9 +1,9 @@
-# $Id: Constants.pm,v 1.9 2006/06/07 02:42:36 asc Exp $
+# $Id: Constants.pm,v 1.10 2006/06/20 00:06:02 asc Exp $
 use strict;
 
 package Net::Delicious::Constants;
 
-$Net::Delicious::Constants::VERSION = '0.99';
+$Net::Delicious::Constants::VERSION = '1.0';
 
 =head1 NAME
 
@@ -74,11 +74,11 @@ sub import {
 
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/06/20 00:06:02 $
 
 =head1 AUTHOR
 

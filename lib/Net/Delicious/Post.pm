@@ -1,10 +1,10 @@
-# $Id: Post.pm,v 1.19 2006/06/08 14:50:15 asc Exp $
+# $Id: Post.pm,v 1.22 2006/06/18 15:24:06 asc Exp $
 use strict;
 
 package Net::Delicious::Post;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Post::VERSION = '0.99';
+$Net::Delicious::Post::VERSION = '1.0';
 
 =head1 NAME
 
@@ -70,7 +70,6 @@ sub new {
     $self->{tags} ||= $args->{ tag };
 
     $self->{user} = Net::Delicious::User->new({name => $args->{user}});
-
     return $self;
 }
 
@@ -84,10 +83,7 @@ Returns a string.
 
 =cut
 
-sub description {
-    my $self = shift;
-    return $self->{description};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->extended()
 
@@ -95,10 +91,7 @@ Returns a string.
 
 =cut
 
-sub extended {
-    my $self = shift;
-    return $self->{extended};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->href()
 
@@ -106,23 +99,23 @@ Returns a string.
 
 =cut
 
-*url  = \&href;
-*link = \&href;
+# Defined in Net::Delicious::Object
 
-sub href {
-    my $self = shift;
-    return $self->{href};
+sub url {
+        return shift->href();
+}
+
+sub link {
+        return shift->href();
 }
 
 =head2 $obj->tag()
 
-Deprecated - calls I<tags>
+Returns a string.
 
 =cut
 
-sub tag {
-    return shift->tags();
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->tags()
 
@@ -131,8 +124,7 @@ Returns a string.
 =cut
 
 sub tags {
-    my $self = shift;
-    return $self->{tags};
+    return shift->tag();
 }
 
 =head2 $obj->user()
@@ -142,8 +134,7 @@ Returns a Net::Delicious::User object.
 =cut
 
 sub user {
-    my $self = shift;
-    return $self->{user};
+        return shift->{user};
 }
 
 =head2 $obj->time()
@@ -152,10 +143,7 @@ Returns a string, formatted I<YYYY-MM-DD>
 
 =cut
 
-sub time {
-    my $self = shift;
-    return $self->{time};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->shared($raw)
 
@@ -190,18 +178,13 @@ sub as_hashref {
         return $data;
 }
 
-sub _properties {
-        my $pkg = shift;
-        return qw (description extended href time parent tags others shared);
-}
-
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/08 14:50:15 $
+$Date: 2006/06/18 15:24:06 $
 
 =head1 AUTHOR
 

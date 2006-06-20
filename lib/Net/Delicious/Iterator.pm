@@ -1,9 +1,9 @@
-# $Id: Iterator.pm,v 1.9 2006/06/07 02:42:36 asc Exp $
+# $Id: Iterator.pm,v 1.11 2006/06/18 14:58:16 asc Exp $
 use strict;
 
 package Net::Delicious::Iterator;
 
-$Net::Delicious::Iterator::VERSION = '0.99';
+$Net::Delicious::Iterator::VERSION = '1.0';
 
 =head1 NAME
 
@@ -44,7 +44,7 @@ Returns a I<Net::Delicious::Iterator> object. Woot!
 
 sub new {
         my $pkg = shift;
-        return bless {pkg=>$_[0],data=>$_[1],count=>0}, $pkg;
+        return bless {pkg=>$_[0], data=>$_[1], count=>0}, $pkg;
 }
 
 =head2 $it->count()
@@ -66,6 +66,7 @@ Returns the next object in the list of available thingies. Woot!
 
 sub next {
         my $self = shift;
+
         if (my $data = $self->{data}->[$self->{count}++]) {
                 return $self->{pkg}->new($data);
         }
@@ -79,11 +80,11 @@ sub reset {
 
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/06/18 14:58:16 $
 
 =head1 AUTHOR
 

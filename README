@@ -18,9 +18,11 @@ DESCRIPTION
 PACKAGE METHODS
   __PACKAGE__->new(\%args || Config::Simple)
     Arguments to the Net::Delicious object may be defined in one of three
-    ways : As a single hash reference or; As a reference to a
-    *Config::Simple* object; as a path to a file that may be read by the
-    *Config::Simple*.
+    ways :
+
+    * As a single hash reference
+    * As a reference to a *Config::Simple* object
+    * As a path to a file that may be read by the *Config::Simple*.
 
     The first option isn't going away any time soon but should be considered
     as deprecated. Valid hash reference arguments are :
@@ -74,6 +76,56 @@ PACKAGE METHODS
         Default is the current user's home directory, followed by a
         temporary directory as determined by File::Temp.
 
+    * xml_parser
+        String.
+
+        You may specify one of three XML parsers to use to handle response
+        messages from the del.icio.us servers. You many want to do this if,
+        instead of Perl-ish objects, you want to access the raw XML and
+        parse it with XPath or XSLT or some other crazy moon language.
+
+        * simple
+            This uses XML::Simple to parse messages. If present, all
+            successful API method calls will return, where applicable,
+            Net::Delicious::* objects.
+
+        * libxml
+            This uses XML::LibXML to parse messages. If present, all
+            successful API method calls will return a
+            *XML::LibXML::Document* object.
+
+            Future releases may allow responses parsed with libxml to be
+            returned as Net::Delicious::* objects.
+
+        * xpath
+            This uses XML::XPath to parse messages. If present, all
+            successful API method calls will return a *XML::XPath* object.
+
+            Future releases may allow responses parsed with XML::XPath to be
+            returned as Net::Delicious::* objects.
+
+        The default value is simple.
+
+    * force_xml_objects
+        Boolean.
+
+        Set to true if you are using XML::Simple to parse response messages
+        from the del.icio.us servers but want to return the object's
+        original data structure rather than Net::Delicious::* objects.
+
+        Default is false.
+
+    * endpoint
+        String.
+
+        Set the endpoint for all API calls.
+
+        There's no particular reason you should ever need to set this
+        unless, say, this module falls horribly out of date with the API
+        itself. Anyway, now you can.
+
+        Default is https://api.del.icio.us/v1/
+
     * debug
         Boolean.
 
@@ -83,7 +135,15 @@ PACKAGE METHODS
     Returns a Net::Delicious object or undef if there was a problem creating
     the object.
 
-OBJECT METHODS
+    It is also possible to set additional config options to tweak the
+    default settings for API call parameters and API response properties.
+    Please consult the POD for Net::Delicious::Config for details.
+
+UPDATE METHODS
+  $obj->update()
+    Returns return the time of the last update formatted as a W3CDTF string.
+
+POST METHODS
   $obj->add_post(\%args)
     Makes a post to del.icio.us.
 
@@ -186,26 +246,6 @@ OBJECT METHODS
     If no posts have been added between calls to this method, it will return
     an empty list (or undef if called in a scalar context.)
 
-  $obj->all_posts_for_tag(\%args)
-    This is a just a helper method which hides a bunch of API calls behind a
-    single method.
-
-    Valid arguments are :
-
-    * tag
-        String. *required*
-
-        The tag you want to retrieve posts for.
-
-    Returns a list of *Net::Delicious::Post* objects when called in an array
-    context.
-
-    Returns a *Net::Delicious::Iterator* object when called in a scalar
-    context.
-
-  $obj->update()
-    Returns return the time of the last update formatted as a W3CDTF string.
-
   $obj->posts(\%args)
     Get a list of posts on a given date, filtered by tag. If no date is
     supplied, most recent date will be used.
@@ -228,6 +268,7 @@ OBJECT METHODS
     Returns a *Net::Delicious::Iterator* object when called in a scalar
     context.
 
+TAG METHODS
   $obj->tags()
     Returns a list of tags.
 
@@ -248,6 +289,24 @@ OBJECT METHODS
 
     Returns true or false.
 
+  $obj->all_posts_for_tag(\%args)
+    This is a just a helper method which hides a bunch of API calls behind a
+    single method.
+
+    Valid arguments are :
+
+    * tag
+        String. *required*
+
+        The tag you want to retrieve posts for.
+
+    Returns a list of *Net::Delicious::Post* objects when called in an array
+    context.
+
+    Returns a *Net::Delicious::Iterator* object when called in a scalar
+    context.
+
+BUNDLE METHODS
   $obj->bundles()
     Returns a list of *Net::Delicious::Bundle* objects when called in an
     array context.
@@ -280,28 +339,21 @@ OBJECT METHODS
 
     Returns true or false
 
-  $obj->inbox_for_date(\%args)
-    This method is no longer part of the del.icio.us API. It will be removed
-    from Net::Delicious in a subsequent release.
-
-  $obj->inbox_dates()
-    This method is no longer part of the del.icio.us API. It will be removed
-    from Net::Delicious in a subsequent release.
-
-  $obj->inbox_subscriptions()
-    This method is no longer part of the del.icio.us API. It will be removed
-    from Net::Delicious in a subsequent release.
-
-  $obj->add_inbox_subscription(\%args)
-    This method is no longer part of the del.icio.us API. It will be removed
-    from Net::Delicious in a subsequent release.
-
-  $obj->remove_inbox_subscription(\%args)
-    This method is no longer part of the del.icio.us API. It will be removed
-    from Net::Delicious in a subsequent release.
-
+HELPER METHODS
   $obj->logger()
     Returns a Log::Dispatch object.
+
+  $obj->config(@args)
+    This is just a short-cut for calling the current object's internal
+    Config::Simple *param* method. You may use to it to get and set config
+    parameters although they will not be saved to disk when the object is
+    destroyed.
+
+  $obj->username()
+    Returns the del.icio.us username for the current object.
+
+  $obj->password()
+    Returns the del.icio.us password for the current object.
 
 ERRORS
     Errors are logged via the object's *logger* method which returns a
@@ -309,10 +361,10 @@ ERRORS
     to provide it with a dispatcher.
 
 VERSION
-    0.99
+    1.0
 
 DATE
-    $Date: 2006/06/08 14:50:15 $
+    $Date: 2006/06/20 02:07:16 $
 
 AUTHOR
     Aaron Straup Cope <ascope@cpan.org>
@@ -322,23 +374,6 @@ SEE ALSO
 
 NOTES
     This package implements the API in its entirety as of *DATE*.
-
-    Version 0.99 is a quick maintenance release to reflect changes to the
-    del.icio.us API. Version 1.0 will remain fully backwards compatible but
-    will introduce the following changes :
-
-    *   Allow for results to be parsed by XML::LibXML or XML::XPath and
-        returned as like objects.
-
-    *   Allow N:D objects to be invoked in a 'not strict' mode if users want
-        or need to pass custom API method arguments - in the event that
-        features are added to the API and this package is not updated in a
-        timely fashion.
-
-    *   Allow users to specify an endpoint, for basically the same reasons
-        as above.
-
-    *   Remove methods that are no longer part of the API.
 
 LICENSE
     Copyright (c) 2004-2006, Aaron Straup Cope. All Rights Reserved.

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Net-Delicious
-version: 0.99
+version: 1.0
 author:
   - Aaron Straup Cope <ascope@cpan.org>
 abstract: OOP for the del.icio.us API

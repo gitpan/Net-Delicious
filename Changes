@@ -6,9 +6,27 @@
 @prefix asc:     <http://aaronland.info/ns/changefile/> .
                                      
 <>
-        dc:identifier           "$Id: Changes,v 1.29 2006/06/08 14:19:46 asc Exp $" ;
+        dc:identifier           "$Id: Changes,v 1.33 2006/06/20 02:07:16 asc Exp $" ;
         dc:description          "Changes for Net::Delicious.pm" ;
         dcterms:references      <http://aaronland.info/perl/net/delicious/> .
+
+<http://aaronland.info/perl/net/delicious/Net-Delicious-1.0.tar.gz>
+        dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;
+        dcterms:replaces    <http://aaronland.info/perl/net/delicious/Net-Delicious-0.99.tar.gz> ;
+
+        doap:Version    [
+                        doap:revision     "1.0" ;
+                        doap:created      "2006-06-19" ;
+                        ];
+        asc:changes     [
+                        asc:bugfix        "Noted dependency on Crypt::SSLeay" ;
+                        asc:bugfix        "Fixed sloppy typo calling _mk_no" ;
+                        asc:addition      "Added new configs and the ability to update them on the fly" ;
+                        asc:addition      "Added the option to specify XML parser and the ability to force return of XML parser-ed objects" ;
+                        asc:update        "Removed deprecated 'inbox' methods" ;
+                        asc:update        "removed N:D:Constants::Api" ;
+                        asc:update        "Updated POD" ;
+                        ] .
 
 <http://aaronland.info/perl/net/delicious/Net-Delicious-0.99.tar.gz>
         dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;

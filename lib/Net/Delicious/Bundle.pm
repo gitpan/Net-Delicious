@@ -1,10 +1,10 @@
-# $Id: Bundle.pm,v 1.9 2006/06/07 02:42:36 asc Exp $
+# $Id: Bundle.pm,v 1.10 2006/06/17 16:56:37 asc Exp $
 use strict;
 
 package Net::Delicious::Bundle;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Bundle::VERSION = '0.99';
+$Net::Delicious::Bundle::VERSION = '1.0';
 
 use overload q("") => sub { shift->name(); };
 
@@ -69,9 +69,7 @@ Returns a string.
 
 =cut
 
-sub name {
-    return shift->{name};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->tags()
 
@@ -98,18 +96,13 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 # Defined in Net::Delicious::Object
 
-sub _properties {
-        my $pkg = shift;
-        return qw ( name tags );
-}
-
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/06/17 16:56:37 $
 
 =head1 AUTHOR
 

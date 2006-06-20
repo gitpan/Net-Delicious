@@ -1,10 +1,10 @@
-# $Id: Tag.pm,v 1.13 2006/06/07 02:42:36 asc Exp $
+# $Id: Tag.pm,v 1.14 2006/06/17 16:56:37 asc Exp $
 use strict;
 
 package Net::Delicious::Tag;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Tag::VERSION = '0.99';
+$Net::Delicious::Tag::VERSION = '1.0';
 
 =head1 NAME
 
@@ -68,10 +68,7 @@ Returns an int.
 
 =cut
 
-sub count {
-    my $self = shift;
-    return $self->{count};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->tag()
 
@@ -79,10 +76,7 @@ Returns an string.
 
 =cut
 
-sub tag {
-    my $self = shift;
-    return $self->{tag};
-}
+# Defined in Net::Delicious::Object
 
 =head2 $obj->as_hashref()
 
@@ -92,18 +86,13 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 # Defined in Net::Delicious::Object
 
-sub _properties {
-        my $pkg = shift;
-        return qw ( tag count );
-}
-
 =head1 VERSION
 
-0.99
+1.0
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/06/17 16:56:37 $
 
 =head1 AUTHOR
 
