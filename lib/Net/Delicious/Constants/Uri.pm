@@ -2,7 +2,7 @@ package Net::Delicious::Constants::Uri;
 use strict;
 
 # $Id: Uri.pm,v 1.8 2006/06/07 02:42:36 asc Exp $
-$Net::Delicious::Constants::Uri::VERSION = '0.99';
+$Net::Delicious::Constants::Uri::VERSION = '1.01';
 
 use URI;
 
@@ -48,7 +48,7 @@ BEGIN {
 
 =head1 VERSION
 
-0.99
+1.01
 
 =head1 DATE
 

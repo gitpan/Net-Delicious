@@ -17,7 +17,7 @@ Constant variables for del.icio.us response messages.
 
 =cut
 
-$Net::Delicious::Constants::Response::VERSION = '1.0';
+$Net::Delicious::Constants::Response::VERSION = '1.01';
 
 =head1 CONSTANTS
 
@@ -52,7 +52,7 @@ BEGIN {
 
 =head1 VERSION
 
-1.0
+1.01
 
 =head1 DATE
 

@@ -4,7 +4,7 @@ use strict;
 package Net::Delicious::Bundle;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Bundle::VERSION = '1.0';
+$Net::Delicious::Bundle::VERSION = '1.01';
 
 use overload q("") => sub { shift->name(); };
 
@@ -98,7 +98,7 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 =head1 VERSION
 
-1.0
+1.01
 
 =head1 DATE
 

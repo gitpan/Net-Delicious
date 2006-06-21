@@ -4,7 +4,7 @@ use strict;
 package Net::Delicious::Tag;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Tag::VERSION = '1.0';
+$Net::Delicious::Tag::VERSION = '1.01';
 
 =head1 NAME
 
@@ -88,7 +88,7 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 =head1 VERSION
 
-1.0
+1.01
 
 =head1 DATE
 

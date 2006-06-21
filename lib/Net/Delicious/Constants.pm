@@ -3,7 +3,7 @@ use strict;
 
 package Net::Delicious::Constants;
 
-$Net::Delicious::Constants::VERSION = '1.0';
+$Net::Delicious::Constants::VERSION = '1.01';
 
 =head1 NAME
 
@@ -74,7 +74,7 @@ sub import {
 
 =head1 VERSION
 
-1.0
+1.01
 
 =head1 DATE
 

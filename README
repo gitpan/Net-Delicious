@@ -355,16 +355,22 @@ HELPER METHODS
   $obj->password()
     Returns the del.icio.us password for the current object.
 
+  $object->user_agent()
+    This returns the objects internal "LWP::UserAgent" in case you need to
+    tweak timeouts, proxies, etc.
+
+    By default the UA object enables the *env_proxy* glue.
+
 ERRORS
     Errors are logged via the object's *logger* method which returns a
     *Log::Dispatch* object. If you want to get at the errors it is up to you
     to provide it with a dispatcher.
 
 VERSION
-    1.0
+    1.01
 
 DATE
-    $Date: 2006/06/20 02:07:16 $
+    $Date: 2006/06/20 13:10:30 $
 
 AUTHOR
     Aaron Straup Cope <ascope@cpan.org>

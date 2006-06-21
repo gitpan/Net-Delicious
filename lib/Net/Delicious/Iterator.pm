@@ -3,7 +3,7 @@ use strict;
 
 package Net::Delicious::Iterator;
 
-$Net::Delicious::Iterator::VERSION = '1.0';
+$Net::Delicious::Iterator::VERSION = '1.01';
 
 =head1 NAME
 
@@ -80,7 +80,7 @@ sub reset {
 
 =head1 VERSION
 
-1.0
+1.01
 
 =head1 DATE
 

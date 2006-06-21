@@ -2,7 +2,7 @@
 use strict;
 
 package Net::Delicious::Object;
-$Net::Delicious::Object::VERSION = '1.0';
+$Net::Delicious::Object::VERSION = '1.01';
 
 =head1 NAME 
 
@@ -64,7 +64,7 @@ sub _mk_hash {
 
 =head1 VERSION
 
-1.0
+1.01
 
 =head1 DATE
 

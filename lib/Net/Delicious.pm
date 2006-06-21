@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.64 2006/06/20 02:07:16 asc Exp $
+# $Id: Delicious.pm,v 1.65 2006/06/20 13:10:30 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '1.0';
+$Net::Delicious::VERSION = '1.01';
 
 =head1 NAME
 
@@ -922,6 +922,29 @@ sub password {
         return $self->config("delicious.pswd");
 }
 
+=head2 $object->user_agent()
+
+This returns the objects internal C<LWP::UserAgent> in case you need to tweak
+timeouts, proxies, etc.
+
+B<By default the UA object enables the I<env_proxy> glue.>
+
+=cut
+
+sub user_agent {
+        my $self = shift;
+        
+        if (ref($self->{'__ua'}) ne "LWP::UserAgent") {
+                my $ua = LWP::UserAgent->new();
+                $ua->agent(sprintf("%s, %s", __PACKAGE__, $Net::Delicious::VERSION));
+                $ua->env_proxy(1);
+
+                $self->{'__ua'} = $ua;
+        }
+        
+        return $self->{'__ua'};
+}
+
 #
 # Private methods
 #
@@ -1104,10 +1127,12 @@ sub _sendrequest {
                 $self->logger()->debug($debug_msg);
                 sleep(PAUSE_SECONDS_OK);
         }
-        
+
+        #
         # send request
-        
-        my $res = $self->_ua()->request($req);
+        #
+
+        my $res = $self->user_agent()->request($req);
         $self->logger()->debug($res->as_string());
         
         # check for 503 status
@@ -1374,11 +1399,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-1.0
+1.01
 
 =head1 DATE 
 
-$Date: 2006/06/20 02:07:16 $
+$Date: 2006/06/20 13:10:30 $
 
 =head1 AUTHOR
 
