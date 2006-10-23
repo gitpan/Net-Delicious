@@ -1,4 +1,4 @@
-# $Id: Build.PL,v 1.5 2006/06/19 14:51:13 asc Exp $
+# $Id: Build.PL,v 1.7 2006/10/23 11:52:32 asc Exp $
 # -*-cperl-*
 
 use strict;
@@ -21,6 +21,7 @@ my $build = Module::Build->new(module_name => 'Net::Delicious',
                                             'IO::AtomicFile' => '>= 2.1',
                                             'File::Spec'     => '>= 0.8',
                                             'Date::Parse'    => '>= 2.27',
+                                            'Config::Simple' => '2',
                                             'Crypt::SSLeay'  => '0',
                                            },
 			       build_requires => {

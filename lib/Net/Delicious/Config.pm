@@ -1,7 +1,7 @@
-# $Id: Config.pm,v 1.15 2006/06/19 14:18:24 asc Exp $
+# $Id: Config.pm,v 1.16 2006/10/23 03:44:29 asc Exp $
 
 package Net::Delicious::Config;
-$Net::Delicious::Config::VERSION = '1.01';
+$Net::Delicious::Config::VERSION = '1.1';
 
 =head1 NAME
 
@@ -177,11 +177,11 @@ sub merge_defaults {
 
 =head1 VERSION
 
-1.01
+1.1
 
 =head1 DATE
 
-$Date: 2006/06/19 14:18:24 $
+$Date: 2006/10/23 03:44:29 $
 
 =head1 AUTHOR
 

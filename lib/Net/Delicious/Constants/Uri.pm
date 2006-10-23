@@ -1,8 +1,8 @@
 package Net::Delicious::Constants::Uri;
 use strict;
 
-# $Id: Uri.pm,v 1.8 2006/06/07 02:42:36 asc Exp $
-$Net::Delicious::Constants::Uri::VERSION = '1.01';
+# $Id: Uri.pm,v 1.9 2006/10/23 03:44:29 asc Exp $
+$Net::Delicious::Constants::Uri::VERSION = '1.1';
 
 use URI;
 
@@ -48,11 +48,11 @@ BEGIN {
 
 =head1 VERSION
 
-1.01
+1.1
 
 =head1 DATE
 
-$Date: 2006/06/07 02:42:36 $
+$Date: 2006/10/23 03:44:29 $
 
 =head1 AUTHOR
 

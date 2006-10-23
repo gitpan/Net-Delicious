@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.65 2006/06/20 13:10:30 asc Exp $
+# $Id: Delicious.pm,v 1.67 2006/10/23 03:55:58 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '1.01';
+$Net::Delicious::VERSION = '1.1';
 
 =head1 NAME
 
@@ -924,10 +924,10 @@ sub password {
 
 =head2 $object->user_agent()
 
-This returns the objects internal C<LWP::UserAgent> in case you need to tweak
+This returns the objects internal LWP::UserAgent in case you need to tweak
 timeouts, proxies, etc.
 
-B<By default the UA object enables the I<env_proxy> glue.>
+B<By default the UA object enables the I<proxy_env> glue.>
 
 =cut
 
@@ -1075,7 +1075,7 @@ sub _validateinput {
                         return undef;
                 }
 
-                if ($type eq "no") {
+                if (($type) && ($type eq "no")) {
                         $self->_mkno($args, $param);
                 }
 
@@ -1399,11 +1399,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-1.01
+1.1
 
 =head1 DATE 
 
-$Date: 2006/06/20 13:10:30 $
+$Date: 2006/10/23 03:55:58 $
 
 =head1 AUTHOR
 

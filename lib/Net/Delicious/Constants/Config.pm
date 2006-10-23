@@ -1,9 +1,9 @@
 package Net::Delicious::Constants::Config;
 use strict;
 
-# $Id: Config.pm,v 1.6 2006/06/20 00:06:02 asc Exp $
+# $Id: Config.pm,v 1.7 2006/10/23 03:44:29 asc Exp $
 
-$Net::Delicious::Constants::Config::VERSION = '1.01';
+$Net::Delicious::Constants::Config::VERSION = '1.1';
 
 =head1 NAME
 
@@ -87,11 +87,11 @@ BEGIN {
 
 =head1 VERSION
 
-1.01
+1.1
 
 =head1 DATE
 
-$Date: 2006/06/20 00:06:02 $
+$Date: 2006/10/23 03:44:29 $
 
 =head1 AUTHOR
 

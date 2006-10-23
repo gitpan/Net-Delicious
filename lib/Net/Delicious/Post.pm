@@ -1,10 +1,10 @@
-# $Id: Post.pm,v 1.22 2006/06/18 15:24:06 asc Exp $
+# $Id: Post.pm,v 1.23 2006/10/23 03:44:29 asc Exp $
 use strict;
 
 package Net::Delicious::Post;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Post::VERSION = '1.01';
+$Net::Delicious::Post::VERSION = '1.1';
 
 =head1 NAME
 
@@ -180,11 +180,11 @@ sub as_hashref {
 
 =head1 VERSION
 
-1.01
+1.1
 
 =head1 DATE
 
-$Date: 2006/06/18 15:24:06 $
+$Date: 2006/10/23 03:44:29 $
 
 =head1 AUTHOR
 

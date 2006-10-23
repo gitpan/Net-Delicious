@@ -1,10 +1,10 @@
-# $Id: Subscription.pm,v 1.11 2006/06/17 16:56:37 asc Exp $
+# $Id: Subscription.pm,v 1.12 2006/10/23 03:44:29 asc Exp $
 use strict;
 
 package Net::Delicious::Subscription;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Subscription::VERSION = '1.01';
+$Net::Delicious::Subscription::VERSION = '1.1';
 
 =head1 NAME
 
@@ -101,11 +101,11 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 =head1 VERSION
 
-1.01
+1.1
 
 =head1 DATE
 
-$Date: 2006/06/17 16:56:37 $
+$Date: 2006/10/23 03:44:29 $
 
 =head1 AUTHOR
 
