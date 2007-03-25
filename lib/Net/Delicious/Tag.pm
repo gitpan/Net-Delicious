@@ -1,10 +1,10 @@
-# $Id: Tag.pm,v 1.15 2006/10/23 03:44:29 asc Exp $
+# $Id: Tag.pm,v 1.16 2007/03/25 15:32:25 asc Exp $
 use strict;
 
 package Net::Delicious::Tag;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Tag::VERSION = '1.1';
+$Net::Delicious::Tag::VERSION = '1.11';
 
 =head1 NAME
 
@@ -88,11 +88,11 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 =head1 VERSION
 
-1.1
+1.11
 
 =head1 DATE
 
-$Date: 2006/10/23 03:44:29 $
+$Date: 2007/03/25 15:32:25 $
 
 =head1 AUTHOR
 
@@ -104,7 +104,7 @@ L<Net::Delicious>
 
 =head1 LICENSE
 
-Copyright (c) 2004-2006 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2007 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

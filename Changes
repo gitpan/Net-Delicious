@@ -6,9 +6,22 @@
 @prefix asc:     <http://aaronland.info/ns/changefile/> .
                                      
 <>
-        dc:identifier           "$Id: Changes,v 1.37 2006/10/23 03:55:58 asc Exp $" ;
+        dc:identifier           "$Id: Changes,v 1.39 2007/03/25 16:10:30 asc Exp $" ;
         dc:description          "Changes for Net::Delicious.pm" ;
         dcterms:references      <http://aaronland.info/perl/net/delicious/> .
+
+<http://aaronland.info/perl/net/delicious/Net-Delicious-1.11.tar.gz>
+        dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;
+        dcterms:replaces    <http://aaronland.info/perl/net/delicious/Net-Delicious-1.1.tar.gz> ;
+
+        doap:Version    [
+                        doap:revision     "1.11" ;
+                        doap:created      "2007-03-25" ;
+                        ];
+        asc:changes     [
+                        asc:bugfix        "Fixed bug setting private __updates variable; http://rt.cpan.org/Ticket/Display.html?id=25760" ;
+                        asc:update        "Updated POD" ;
+                        ] .
 
 <http://aaronland.info/perl/net/delicious/Net-Delicious-1.1.tar.gz>
         dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;

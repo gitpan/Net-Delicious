@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.67 2006/10/23 03:55:58 asc Exp $
+# $Id: Delicious.pm,v 1.69 2007/03/25 15:53:02 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '1.1';
+$Net::Delicious::VERSION = '1.11';
 
 =head1 NAME
 
@@ -92,8 +92,9 @@ The path to a directory where the timestamp for the last
 update to your bookmarks can be recorded. This is used by
 the I<all_posts> method to prevent abusive requests.
 
-Default is the current user's home directory, followed by
-a temporary directory as determined by File::Temp.
+Default is the current user's home directory; If the home directory
+can not be determined Net::Delicious will use a temporary directory
+as determined by File::Temp.
 
 =item * B<debug>
 
@@ -1006,22 +1007,28 @@ sub _path_update {
         
         my $root = undef;
         my $file = sprintf(".del.icio.us.%s", $self->config("delicious.user"));
+
+        if (! $self->{'__updates'}){
+
+                my $user_cfg = $self->config("delicious.updates");
+
+                if ($user_cfg) {
+                        $self->{'__updates'} = $user_cfg;
+                }
+                
+                elsif (-d (getpwuid($EUID))[7]) {
+                        $self->{'__updates'} = (getpwuid($EUID))[7];
+                }
+                
         
-        if ((exists($self->{'__updates'})) && (-d $self->{'__updated'})) {
-                $root = $self->{'__updates'};
+                else {
+                        $root = File::Temp::tempdir();
+                        $self->{'__updates'} = $root;
+                }
         }
-        
-        elsif (-d (getpwuid($EUID))[7]) {
-                $root = (getpwuid($EUID))[7];
-        }
-        
-        
-        else {
-                $root = File::Temp::tempdir();
-                $self->{'__updates'} = $root;
-        }
-        
-        return File::Spec->catfile($root,$file);
+
+        my $root = $self->{'__updates'};
+        return File::Spec->catfile($root, $file);
 }
 
 sub _execute_method {
@@ -1399,11 +1406,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-1.1
+1.11
 
 =head1 DATE 
 
-$Date: 2006/10/23 03:55:58 $
+$Date: 2007/03/25 15:53:02 $
 
 =head1 AUTHOR
 
@@ -1419,7 +1426,7 @@ This package implements the API in its entirety as of I<DATE>.
 
 =head1 LICENSE
 
-Copyright (c) 2004-2006, Aaron Straup Cope. All Rights Reserved.
+Copyright (c) 2004-2007, Aaron Straup Cope. All Rights Reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

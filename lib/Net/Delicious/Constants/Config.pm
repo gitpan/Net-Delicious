@@ -1,9 +1,9 @@
 package Net::Delicious::Constants::Config;
 use strict;
 
-# $Id: Config.pm,v 1.7 2006/10/23 03:44:29 asc Exp $
+# $Id: Config.pm,v 1.9 2007/03/25 15:53:02 asc Exp $
 
-$Net::Delicious::Constants::Config::VERSION = '1.1';
+$Net::Delicious::Constants::Config::VERSION = '1.11';
 
 =head1 NAME
 
@@ -34,7 +34,8 @@ use constant DELICIOUS_CFG_STD => (endpoint          => URI_API,
                                    force_xml_objects => 0,
                                    debug             => 0,
                                    user              => '',
-                                   pswd              => '');
+                                   pswd              => '',
+                                   updates           => '');
 
 =head2 DELICIOUS_CFG_API
 
@@ -87,11 +88,11 @@ BEGIN {
 
 =head1 VERSION
 
-1.1
+1.11
 
 =head1 DATE
 
-$Date: 2006/10/23 03:44:29 $
+$Date: 2007/03/25 15:53:02 $
 
 =head1 AUTHOR
 
@@ -107,7 +108,7 @@ L<Net::Delicious::Constants>
 
 =head1 LICENSE
 
-Copyright (c) 2004-2006 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2007 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.
