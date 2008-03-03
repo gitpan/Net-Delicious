@@ -1,10 +1,10 @@
-# $Id: User.pm,v 1.10 2007/03/25 15:32:25 asc Exp $
+# $Id: User.pm,v 1.11 2008/03/03 16:55:04 asc Exp $
 use strict;
 
 package Net::Delicious::User;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::User::VERSION = '1.11';
+$Net::Delicious::User::VERSION = '1.13';
 
 =head1 NAME
 
@@ -78,11 +78,11 @@ Return the object as a hash ref safe for serializing and re-blessing.
 
 =head1 VERSION
 
-1.11
+1.13
 
 =head1 DATE
 
-$Date: 2007/03/25 15:32:25 $
+$Date: 2008/03/03 16:55:04 $
 
 =head1 AUTHOR
 
@@ -94,7 +94,7 @@ L<Net::Delicious>
 
 =head1 LICENSE
 
-Copyright (c) 2004-2007 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2008 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

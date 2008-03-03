@@ -6,9 +6,34 @@
 @prefix asc:     <http://aaronland.info/ns/changefile/> .
                                      
 <>
-        dc:identifier           "$Id: Changes,v 1.39 2007/03/25 16:10:30 asc Exp $" ;
+        dc:identifier           "$Id: Changes,v 1.41 2008/03/03 16:55:04 asc Exp $" ;
         dc:description          "Changes for Net::Delicious.pm" ;
         dcterms:references      <http://aaronland.info/perl/net/delicious/> .
+
+<http://aaronland.info/perl/net/delicious/Net-Delicious-1.13.tar.gz>
+        dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;
+        dcterms:replaces    <http://aaronland.info/perl/net/delicious/Net-Delicious-1.13.tar.gz> ;
+
+        doap:Version    [
+                        doap:revision     "1.13" ;
+                        doap:created      "2008-03-03" ;
+                        ];
+        asc:changes     [
+                        asc:bugfix        "Fixed my $root redeclaration - http://rt.cpan.org/Public/Bug/Display.html?id=25760" ;
+                        asc:updat         "Updated POD" ;
+                        ] .
+
+<http://aaronland.info/perl/net/delicious/Net-Delicious-1.12.tar.gz>
+        dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;
+        dcterms:replaces    <http://aaronland.info/perl/net/delicious/Net-Delicious-1.11.tar.gz> ;
+
+        doap:Version    [
+                        doap:revision     "1.12" ;
+                        doap:created      "2007-07-05" ;
+                        ];
+        asc:changes     [
+                        asc:bugfix        "Fixed missing 'my' declaration" ;
+                        ] .
 
 <http://aaronland.info/perl/net/delicious/Net-Delicious-1.11.tar.gz>
         dcterms:isVersionOf <http://aaronland.info/perl/net/delicious/> ;

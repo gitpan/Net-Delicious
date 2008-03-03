@@ -1,9 +1,9 @@
-# $Id: Delicious.pm,v 1.69 2007/03/25 15:53:02 asc Exp $
+# $Id: Delicious.pm,v 1.71 2008/03/03 16:55:04 asc Exp $
 
 package Net::Delicious;
 use strict;
 
-$Net::Delicious::VERSION = '1.11';
+$Net::Delicious::VERSION = '1.13';
 
 =head1 NAME
 
@@ -1005,7 +1005,6 @@ sub _is_updated {
 sub _path_update {
         my $self = shift;
         
-        my $root = undef;
         my $file = sprintf(".del.icio.us.%s", $self->config("delicious.user"));
 
         if (! $self->{'__updates'}){
@@ -1022,8 +1021,7 @@ sub _path_update {
                 
         
                 else {
-                        $root = File::Temp::tempdir();
-                        $self->{'__updates'} = $root;
+                        $self->{'__updates'} = File::Temp::tempdir();
                 }
         }
 
@@ -1406,11 +1404,11 @@ up to you to provide it with a dispatcher.
 
 =head1 VERSION
 
-1.11
+1.13
 
 =head1 DATE 
 
-$Date: 2007/03/25 15:53:02 $
+$Date: 2008/03/03 16:55:04 $
 
 =head1 AUTHOR
 
@@ -1426,7 +1424,7 @@ This package implements the API in its entirety as of I<DATE>.
 
 =head1 LICENSE
 
-Copyright (c) 2004-2007, Aaron Straup Cope. All Rights Reserved.
+Copyright (c) 2004-2008, Aaron Straup Cope. All Rights Reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

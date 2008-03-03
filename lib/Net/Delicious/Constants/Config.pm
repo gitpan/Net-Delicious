@@ -1,9 +1,9 @@
 package Net::Delicious::Constants::Config;
 use strict;
 
-# $Id: Config.pm,v 1.9 2007/03/25 15:53:02 asc Exp $
+# $Id: Config.pm,v 1.10 2008/03/03 16:55:04 asc Exp $
 
-$Net::Delicious::Constants::Config::VERSION = '1.11';
+$Net::Delicious::Constants::Config::VERSION = '1.13';
 
 =head1 NAME
 
@@ -88,11 +88,11 @@ BEGIN {
 
 =head1 VERSION
 
-1.11
+1.13
 
 =head1 DATE
 
-$Date: 2007/03/25 15:53:02 $
+$Date: 2008/03/03 16:55:04 $
 
 =head1 AUTHOR
 
@@ -108,7 +108,7 @@ L<Net::Delicious::Constants>
 
 =head1 LICENSE
 
-Copyright (c) 2004-2007 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2008 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.

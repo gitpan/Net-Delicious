@@ -1,8 +1,8 @@
-# $Id: Object.pm,v 1.15 2007/03/25 15:32:25 asc Exp $
+# $Id: Object.pm,v 1.16 2008/03/03 16:55:04 asc Exp $
 use strict;
 
 package Net::Delicious::Object;
-$Net::Delicious::Object::VERSION = '1.11';
+$Net::Delicious::Object::VERSION = '1.13';
 
 =head1 NAME 
 
@@ -64,11 +64,11 @@ sub _mk_hash {
 
 =head1 VERSION
 
-1.11
+1.13
 
 =head1 DATE
 
-$Date: 2007/03/25 15:32:25 $
+$Date: 2008/03/03 16:55:04 $
 
 =head1 AUTHOR
 
@@ -76,7 +76,7 @@ Aaron Straup Cope E<lt>ascope@cpan.orgE<gt>
 
 =head1 LICENSE
 
-Copyright (c) 2004-2007 Aaron Straup Cope. All rights reserved.
+Copyright (c) 2004-2008 Aaron Straup Cope. All rights reserved.
 
 This is free software, you may use it and distribute it under the
 same terms as Perl itself.
