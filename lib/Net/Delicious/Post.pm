@@ -4,7 +4,7 @@ use strict;
 package Net::Delicious::Post;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Post::VERSION = '1.13';
+$Net::Delicious::Post::VERSION = '1.14';
 
 =head1 NAME
 

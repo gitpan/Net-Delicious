@@ -2,7 +2,7 @@
 use strict;
 
 package Net::Delicious::Object;
-$Net::Delicious::Object::VERSION = '1.13';
+$Net::Delicious::Object::VERSION = '1.14';
 
 =head1 NAME 
 

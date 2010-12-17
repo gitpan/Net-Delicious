@@ -4,7 +4,7 @@ use strict;
 package Net::Delicious::Bundle;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Bundle::VERSION = '1.13';
+$Net::Delicious::Bundle::VERSION = '1.14';
 
 use overload q("") => sub { shift->name(); };
 

@@ -4,7 +4,7 @@ use strict;
 package Net::Delicious::Tag;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Tag::VERSION = '1.13';
+$Net::Delicious::Tag::VERSION = '1.14';
 
 =head1 NAME
 

@@ -4,7 +4,7 @@ use strict;
 package Net::Delicious::Subscription;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Subscription::VERSION = '1.13';
+$Net::Delicious::Subscription::VERSION = '1.14';
 
 =head1 NAME
 

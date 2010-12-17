@@ -17,7 +17,6 @@ lib/Net/Delicious/Tag.pm
 lib/Net/Delicious/User.pm
 MANIFEST
 MANIFEST.SKIP
-Makefile.PL
 META.yml
 README
 t/01-load.t

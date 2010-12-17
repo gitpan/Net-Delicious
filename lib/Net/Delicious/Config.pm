@@ -1,7 +1,7 @@
 # $Id: Config.pm,v 1.18 2008/03/03 16:55:04 asc Exp $
 
 package Net::Delicious::Config;
-$Net::Delicious::Config::VERSION = '1.13';
+$Net::Delicious::Config::VERSION = '1.14';
 
 =head1 NAME
 

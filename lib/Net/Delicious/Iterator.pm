@@ -3,7 +3,7 @@ use strict;
 
 package Net::Delicious::Iterator;
 
-$Net::Delicious::Iterator::VERSION = '1.13';
+$Net::Delicious::Iterator::VERSION = '1.14';
 
 =head1 NAME
 

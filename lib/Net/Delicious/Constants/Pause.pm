@@ -17,7 +17,7 @@ Constant variables for del.icio.us
 
 =cut
 
-$Net::Delicious::Constants::Pause::VERSION = '1.13';
+$Net::Delicious::Constants::Pause::VERSION = '1.14';
 
 =head1 CONSTANTS
 

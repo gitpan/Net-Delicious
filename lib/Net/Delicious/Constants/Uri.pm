@@ -2,7 +2,7 @@ package Net::Delicious::Constants::Uri;
 use strict;
 
 # $Id: Uri.pm,v 1.11 2008/03/03 16:55:04 asc Exp $
-$Net::Delicious::Constants::Uri::VERSION = '1.13';
+$Net::Delicious::Constants::Uri::VERSION = '1.14';
 
 use URI;
 

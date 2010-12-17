@@ -3,7 +3,7 @@ use strict;
 
 package Net::Delicious::Constants;
 
-$Net::Delicious::Constants::VERSION = '1.13';
+$Net::Delicious::Constants::VERSION = '1.14';
 
 =head1 NAME
 

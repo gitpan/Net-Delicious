@@ -10,7 +10,7 @@ SYNOPSIS
 
       foreach my $p ($del->recent_posts()) {
           print $p->description()."\n";
-      } 
+      }
 
 DESCRIPTION
     OOP for the del.icio.us API
@@ -20,24 +20,29 @@ PACKAGE METHODS
     Arguments to the Net::Delicious object may be defined in one of three
     ways :
 
-    * As a single hash reference
-    * As a reference to a *Config::Simple* object
-    * As a path to a file that may be read by the *Config::Simple*.
+    *   As a single hash reference
+
+    *   As a reference to a *Config::Simple* object
+
+    *   As a path to a file that may be read by the *Config::Simple*.
 
     The first option isn't going away any time soon but should be considered
     as deprecated. Valid hash reference arguments are :
 
-    * user
+    *   user
+
         String. *required*
 
         Your del.icio.us username.
 
-    * pswd
+    *   pswd
+
         String. *required*
 
         Your del.icio.us password.
 
-    * updates
+    *   updates
+
         String.
 
         The path to a directory where the timestamp for the last update to
@@ -48,7 +53,8 @@ PACKAGE METHODS
         can not be determined Net::Delicious will use a temporary directory
         as determined by File::Temp.
 
-    * debug
+    *   debug
+
         Boolean.
 
         Add a *Log::Dispatch::Screen* dispatcher to log debug (and higher)
@@ -57,17 +63,20 @@ PACKAGE METHODS
     *Config::Simple* options are expected to be grouped in a "block" labeled
     delicious. Valid options are :
 
-    * user
+    *   user
+
         String. *required*
 
         Your del.icio.us username.
 
-    * pswd
+    *   pswd
+
         String. *required*
 
         Your del.icio.us password.
 
-    * updates
+    *   updates
+
         String.
 
         The path to a directory where the timestamp for the last update to
@@ -77,7 +86,8 @@ PACKAGE METHODS
         Default is the current user's home directory, followed by a
         temporary directory as determined by File::Temp.
 
-    * xml_parser
+    *   xml_parser
+
         String.
 
         You may specify one of three XML parsers to use to handle response
@@ -85,12 +95,14 @@ PACKAGE METHODS
         instead of Perl-ish objects, you want to access the raw XML and
         parse it with XPath or XSLT or some other crazy moon language.
 
-        * simple
+        *   simple
+
             This uses XML::Simple to parse messages. If present, all
             successful API method calls will return, where applicable,
             Net::Delicious::* objects.
 
-        * libxml
+        *   libxml
+
             This uses XML::LibXML to parse messages. If present, all
             successful API method calls will return a
             *XML::LibXML::Document* object.
@@ -98,7 +110,8 @@ PACKAGE METHODS
             Future releases may allow responses parsed with libxml to be
             returned as Net::Delicious::* objects.
 
-        * xpath
+        *   xpath
+
             This uses XML::XPath to parse messages. If present, all
             successful API method calls will return a *XML::XPath* object.
 
@@ -107,7 +120,8 @@ PACKAGE METHODS
 
         The default value is simple.
 
-    * force_xml_objects
+    *   force_xml_objects
+
         Boolean.
 
         Set to true if you are using XML::Simple to parse response messages
@@ -116,7 +130,8 @@ PACKAGE METHODS
 
         Default is false.
 
-    * endpoint
+    *   endpoint
+
         String.
 
         Set the endpoint for all API calls.
@@ -127,7 +142,8 @@ PACKAGE METHODS
 
         Default is https://api.del.icio.us/v1/
 
-    * debug
+    *   debug
+
         Boolean.
 
         Add a *Log::Dispatch::Screen* dispatcher to log debug (and higher)
@@ -150,38 +166,45 @@ POST METHODS
 
     Valid arguments are :
 
-    * url
+    *   url
+
         String. *required*
 
         Url for post
 
-    * description
+    *   description
+
         String.
 
         Description for post.
 
-    * extended
+    *   extended
+
         String.
 
         Extended for post.
 
-    * tags
+    *   tags
+
         String.
 
         Space-delimited list of tags.
 
-    * dt
+    *   dt
+
         String.
 
         Datestamp for post, format "CCYY-MM-DDThh:mm:ssZ"
 
-    * shared
+    *   shared
+
         Boolean. (Technically, you need to pass the string "no" but N:D will
         handle 1s and 0s.)
 
         Make the post private. Default is true.
 
-    * replace
+    *   replace
+
         Boolean. (Technically, you need to pass the string "no" but N:D will
         handle 1s and 0s.)
 
@@ -195,7 +218,8 @@ POST METHODS
 
     Valid arguments are :
 
-    * url
+    *   url
+
         String. *required*
 
     Returns true or false.
@@ -205,7 +229,8 @@ POST METHODS
 
     Valid arguments are :
 
-    * tag
+    *   tag
+
         String.
 
         Filter by this tag.
@@ -221,12 +246,14 @@ POST METHODS
 
     Valid arguments are :
 
-    * tag
+    *   tag
+
         String.
 
         Filter by this tag.
 
-    * count
+    *   count
+
         Int.
 
         Number of posts to return. Default is 20; maximum is 100
@@ -253,12 +280,14 @@ POST METHODS
 
     Valid arguments are :
 
-    * tag
+    *   tag
+
         String.
 
         Filter by this tag.
 
-    * dt
+    *   dt
+
         String.
 
         Filter by this date.
@@ -278,12 +307,14 @@ TAG METHODS
 
     Valid arguments are :
 
-    * old
+    *   old
+
         String. *required*
 
         Old tag
 
-    * new
+    *   new
+
         String. *required*
 
         New tag
@@ -296,7 +327,8 @@ TAG METHODS
 
     Valid arguments are :
 
-    * tag
+    *   tag
+
         String. *required*
 
         The tag you want to retrieve posts for.
@@ -318,12 +350,14 @@ BUNDLE METHODS
   $obj->set_bundle(\%args)
     Valid arguments are :
 
-    * bundle
+    *   bundle
+
         String. *required*
 
         The name of the bundle to set.
 
-    * tags
+    *   tags
+
         String. *required*
 
         A space-separated list of tags.
@@ -333,7 +367,8 @@ BUNDLE METHODS
   $obj->delete_bundle(\%args)
     Valid arguments are :
 
-    * bundle
+    *   bundle
+
         String. *required*
 
         The name of the bundle to set

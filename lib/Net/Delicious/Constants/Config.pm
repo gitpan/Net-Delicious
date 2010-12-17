@@ -3,7 +3,7 @@ use strict;
 
 # $Id: Config.pm,v 1.10 2008/03/03 16:55:04 asc Exp $
 
-$Net::Delicious::Constants::Config::VERSION = '1.13';
+$Net::Delicious::Constants::Config::VERSION = '1.14';
 
 =head1 NAME
 

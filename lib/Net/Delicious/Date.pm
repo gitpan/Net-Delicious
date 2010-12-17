@@ -4,7 +4,7 @@ use strict;
 package Net::Delicious::Date;
 use base qw (Net::Delicious::Object);
 
-$Net::Delicious::Date::VERSION = '1.13';
+$Net::Delicious::Date::VERSION = '1.14';
 
 =head1 NAME
 
